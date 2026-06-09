@@ -19,8 +19,11 @@
     --rule-2: #C7C0AD;
     --accent: #2C5A4A;
     --accent-soft: #D9E5DF;
+    --accent-tint: #EEF4F0;
     --warn: #B45A3C;
     --warn-soft: #F4E0D5;
+    --amber: #C9A24A;
+    --rust: #94493D;
     --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
     --sans: 'Hanken Grotesk', system-ui, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -62,6 +65,7 @@
     font-family: var(--serif); font-weight: 500; font-size: 22px;
     margin: 0 0 4px; letter-spacing: -0.01em;
   }
+  h2 em { font-style: italic; color: var(--accent); }
   .section-note { font-size: 13px; color: var(--ink-3); margin: 0 0 20px; }
 
   .setup, .controls {
@@ -269,23 +273,136 @@
     font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.04em;
   }
 
-  /* Right-rail methodology panel */
+  /* Calibration outcomes */
+  .calib-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px 32px;
+    margin-bottom: 24px;
+  }
+  .prob-bar-wrap {
+    padding-top: 20px;
+    border-top: 1px dashed var(--rule);
+  }
+  .prob-bar {
+    display: flex;
+    height: 32px;
+    background: var(--bg);
+    border: 1px solid var(--rule-2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .prob-seg {
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    color: white; white-space: nowrap; overflow: hidden;
+    transition: flex-basis 0.3s ease;
+    min-width: 0;
+  }
+  .prob-seg.pass { background: var(--accent); }
+  .prob-seg.relax { background: var(--amber); }
+  .prob-seg.fail { background: var(--rust); }
+  .prob-legend {
+    display: flex; gap: 28px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-2);
+  }
+  .prob-legend > span { display: inline-flex; align-items: center; }
+  .prob-legend .dot {
+    display: inline-block; width: 10px; height: 10px;
+    border-radius: 2px; margin-right: 7px;
+  }
+  .prob-legend .dot.pass { background: var(--accent); }
+  .prob-legend .dot.relax { background: var(--amber); }
+  .prob-legend .dot.fail { background: var(--rust); }
+  .prob-legend strong {
+    font-family: var(--serif); font-weight: 500;
+    font-size: 15px; color: var(--ink);
+    margin-left: 6px; font-feature-settings: "tnum";
+  }
+
+  /* Right-rail panels */
   .side-col {
     position: sticky; top: 32px; align-self: start;
   }
+  .right-stack {
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule-2) transparent;
+  }
+  .right-stack::-webkit-scrollbar { width: 6px; }
+  .right-stack::-webkit-scrollbar-thumb { background: var(--rule-2); border-radius: 3px; }
+
+  .recommendations {
+    background: var(--accent-tint);
+    border: 1px solid var(--accent-soft);
+    border-radius: 4px;
+    padding: 18px 20px 4px;
+    margin-bottom: 28px;
+  }
+  .rec-eyebrow {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+  }
+  .rec-item {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--accent-soft);
+  }
+  .rec-item:last-child { border-bottom: none; padding-bottom: 14px; }
+  .rec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 4px; gap: 10px;
+  }
+  .rec-name {
+    font-size: 12px; color: var(--ink-2); font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .rec-apply {
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; padding: 2px 7px; border-radius: 3px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    transition: all 0.15s ease; flex-shrink: 0;
+  }
+  .rec-apply:hover {
+    background: var(--accent-soft); border-color: var(--accent-soft);
+  }
+  .rec-apply:focus { outline: none; border-color: var(--accent); }
+  .rec-apply.disabled {
+    color: var(--ink-3); cursor: not-allowed; opacity: 0.5;
+  }
+  .rec-apply.disabled:hover { background: transparent; }
+  .rec-value {
+    line-height: 1; margin-bottom: 8px;
+  }
+  .rec-value strong {
+    font-family: var(--serif); font-size: 30px; font-weight: 500;
+    color: var(--ink); font-feature-settings: "tnum"; font-style: normal;
+  }
+  .rec-value-suffix {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    margin-left: 8px;
+  }
+  .rec-note {
+    font-size: 12.5px; color: var(--ink-2);
+    margin: 0; line-height: 1.5;
+  }
+  .rec-note em {
+    font-family: var(--serif); font-style: italic; color: var(--accent);
+  }
+  .rec-note .warn { color: var(--rust); font-weight: 500; }
+
   .notes-panel {
     background: transparent;
     border-left: 1px solid var(--rule);
     padding: 4px 0 4px 32px;
     font-size: 13.5px; line-height: 1.6;
     color: var(--ink-2);
-    max-height: calc(100vh - 64px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--rule-2) transparent;
   }
-  .notes-panel::-webkit-scrollbar { width: 6px; }
-  .notes-panel::-webkit-scrollbar-thumb { background: var(--rule-2); border-radius: 3px; }
   .notes-panel-eyebrow {
     font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em;
     text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px;
@@ -321,12 +438,13 @@
   @media (max-width: 1080px) {
     .layout { grid-template-columns: 1fr; gap: 36px; }
     .side-col { position: static; }
-    .notes-panel { border-left: none; border-top: 1px solid var(--rule); padding: 24px 0 0; max-height: none; }
+    .right-stack { max-height: none; overflow: visible; }
+    .notes-panel { border-left: none; border-top: 1px solid var(--rule); padding: 24px 0 0; }
   }
   @media (max-width: 720px) {
     .page { padding: 36px 20px 56px; }
     h1 { font-size: 32px; }
-    .controls, .setup-grid { grid-template-columns: 1fr; gap: 18px; }
+    .controls, .setup-grid, .calib-grid { grid-template-columns: 1fr; gap: 18px; }
     .controls, .setup { padding: 20px; }
     .metrics { grid-template-columns: repeat(2, 1fr); }
     .metric { min-height: 96px; }
@@ -337,9 +455,9 @@
 <main class="page">
 
   <header>
-    <p class="eyebrow">Sample-size tool · Monte Carlo</p>
-    <h1>Choosing <em>sample size</em> for an intraclass correlation</h1>
-    <p class="lede">You have a fixed pool of AI-rated responses and want to hand a sample to two humans. Set the study assumptions and the simulator shows how precisely you'll estimate ICC at each sample size.</p>
+    <p class="eyebrow">Sample-size tool · Monte Carlo · ICC(1,1)</p>
+    <h1>Calibrating <em>k</em> and choosing <em>M</em> for inter-rater ICC</h1>
+    <p class="lede">A pre-grading calibration on k outputs verifies the rubric works. Then M outputs are double-rated to estimate ICC for the main study. This tool plans both.</p>
   </header>
 
   <div class="layout">
@@ -348,7 +466,7 @@
 
       <section>
         <h2>Study setup</h2>
-        <p class="section-note">The pool you're sampling from. Each response is an integer rating on a fixed scale.</p>
+        <p class="section-note">The pool you're sampling from. Each output is rated on each dimension on a fixed integer scale.</p>
 
         <div class="setup">
           <div class="setup-grid">
@@ -357,25 +475,26 @@
               <input type="number" id="pIn" min="2" max="100000" step="1" value="1000" />
             </div>
             <div class="ctrl-row">
-              <div class="ctrl-head"><label class="ctrl-label" for="qIn">Responses per participant</label></div>
-              <input type="number" id="qIn" min="1" max="200" step="1" value="9" />
+              <div class="ctrl-head"><label class="ctrl-label" for="qIn">Outputs per participant</label></div>
+              <input type="number" id="qIn" min="1" max="200" step="1" value="5" />
             </div>
             <div class="ctrl-row">
               <div class="ctrl-head">
                 <span class="label-block">
-                  <label class="ctrl-label" for="kIn">Criteria per response</label>
-                  <span class="info-tip" tabindex="0" role="button" aria-label="About criteria">i<span class="info-content" role="tooltip">
-                    <strong>Criteria per response</strong>
-                    <p>Number of rubric items each response is judged on (e.g., clarity, accuracy, fluency). Used only by joint-confidence mode to count how many ICCs you'll be reporting: <code>3 pairs × C criteria</code>. Does not affect grading workload, since the assumption here is one rating per response.</p>
+                  <label class="ctrl-label" for="kIn">Dimensions per output</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About dimensions">i<span class="info-content" role="tooltip">
+                    <strong>Dimensions per output</strong>
+                    <p>Number of rubric dimensions each output is scored on (e.g., source characterization, argument quality, counter-argument engagement, faithfulness, structural coherence, clarity = 6).</p>
+                    <p>Used only by joint-confidence mode to count how many ICCs you'll report: <code>3 pairs × D dimensions</code>. Does not affect rating-session workload.</p>
                   </span></span>
                 </span>
               </div>
-              <input type="number" id="kIn" min="1" max="20" step="1" value="3" />
+              <input type="number" id="kIn" min="1" max="20" step="1" value="6" />
             </div>
             <div class="ctrl-row">
               <div class="ctrl-head"><label class="ctrl-label">Rating scale</label></div>
               <div class="scale-pair">
-                <input type="number" id="sMinIn" min="0" max="50" step="1" value="1" />
+                <input type="number" id="sMinIn" min="0" max="50" step="1" value="0" />
                 <span>to</span>
                 <input type="number" id="sMaxIn" min="2" max="100" step="1" value="10" />
               </div>
@@ -383,38 +502,23 @@
           </div>
 
           <div class="setup-summary">
-            <span><strong id="totalOut">9,000</strong> total responses in pool</span>
+            <span><strong id="totalOut">5,000</strong> total outputs in pool</span>
           </div>
         </div>
       </section>
 
       <section>
-        <h2>Sampling parameters</h2>
-        <p class="section-note">Two human raters, single measurement, ICC(1,1) with finite-population correction.</p>
+        <h2>Planning assumption</h2>
+        <p class="section-note">Your expectation of inter-rater agreement — used by both calibration and main-grading calculations below.</p>
 
-        <div class="controls">
-          <div class="ctrl-row">
-            <div class="ctrl-head">
-              <span class="label-block">
-                <label class="ctrl-label" for="nIn">Sample size <span class="sym">N</span> (participants)</label>
-                <span class="info-tip" tabindex="0" role="button" aria-label="About N">i<span class="info-content" role="tooltip">
-                  <strong>Sample size N</strong>
-                  <p>The number of <em>participants</em> you'll sample for human grading. Each sampled participant contributes their full set of responses (R per participant) to the rating exercise.</p>
-                  <p>Effective ICC sample size is therefore <code>N × R</code> responses, which is what determines CI width in the calculations below.</p>
-                </span></span>
-              </span>
-              <span class="ctrl-val" id="nOut">30</span>
-            </div>
-            <input type="range" id="nIn" min="2" max="1000" step="1" value="30" />
-          </div>
-
+        <div class="setup">
           <div class="ctrl-row">
             <div class="ctrl-head">
               <span class="label-block">
                 <label class="ctrl-label" for="rIn">Assumed true ICC <span class="sym">ρ</span></label>
                 <span class="info-tip" tabindex="0" role="button" aria-label="About true ICC">i<span class="info-content" role="tooltip">
                   <strong>True ICC (ρ)</strong>
-                  <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — the value used for planning the sample size.</p>
+                  <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — used for planning both calibration and main grading.</p>
                   <span class="bands">
                     <span>&lt; 0.50</span><span>poor agreement</span>
                     <span>0.50–0.75</span><span>moderate</span>
@@ -424,9 +528,94 @@
                   <span class="cite">Bands from Koo &amp; Li (2016)</span>
                 </span></span>
               </span>
-              <span class="ctrl-val" id="rOut">0.70</span>
+              <span class="ctrl-val" id="rOut">0.75</span>
             </div>
-            <input type="range" id="rIn" min="0" max="0.95" step="0.01" value="0.70" />
+            <input type="range" id="rIn" min="0" max="0.95" step="0.01" value="0.75" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Calibration check (at <em>k</em>)</h2>
+        <p class="section-note">Before main grading, k outputs are double-rated to verify the rubric meets a pre-registered ICC threshold. Probabilities below assume true ICC = ρ.</p>
+
+        <div class="setup">
+          <div class="calib-grid">
+            <div class="ctrl-row">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="kCalIn">Calibration size <span class="sym">k</span></label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About calibration size">i<span class="info-content" role="tooltip">
+                    <strong>Calibration set size (k)</strong>
+                    <p>Number of outputs scored by both raters <em>before</em> main grading begins, to check that the rubric and raters produce reliable scores.</p>
+                    <p>The proposal pre-registers k = 50.</p>
+                  </span></span>
+                </span>
+              </div>
+              <input type="number" id="kCalIn" min="5" max="500" step="1" value="50" />
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="rhoStrictIn">Strict threshold</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About strict threshold">i<span class="info-content" role="tooltip">
+                    <strong>Strict threshold</strong>
+                    <p>If the sample ICC at k outputs meets or exceeds this, calibration passes outright and main grading proceeds.</p>
+                    <p>The proposal sets this at 0.70 — the Koo &amp; Li boundary between moderate and good agreement.</p>
+                  </span></span>
+                </span>
+              </div>
+              <input type="number" id="rhoStrictIn" min="0" max="1" step="0.01" value="0.70" />
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="rhoRelaxIn">Relaxed threshold</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About relaxed threshold">i<span class="info-content" role="tooltip">
+                    <strong>Relaxed threshold</strong>
+                    <p>If the sample ICC falls between this value and the strict threshold, the bar is relaxed to this value, with explicit reporting in the paper.</p>
+                    <p>Below this value, calibration fails and the rubric or raters need re-training.</p>
+                    <p>The proposal sets this at 0.65.</p>
+                  </span></span>
+                </span>
+              </div>
+              <input type="number" id="rhoRelaxIn" min="0" max="1" step="0.01" value="0.65" />
+            </div>
+          </div>
+
+          <div class="prob-bar-wrap">
+            <div class="prob-bar" role="img" aria-label="Stacked bar showing probabilities of calibration outcome.">
+              <div class="prob-seg pass" id="probStrictSeg">—</div>
+              <div class="prob-seg relax" id="probRelaxSeg">—</div>
+              <div class="prob-seg fail" id="probFailSeg">—</div>
+            </div>
+            <div class="prob-legend">
+              <span><span class="dot pass"></span>pass strict <strong id="probStrictTxt">—</strong></span>
+              <span><span class="dot relax"></span>relaxed band <strong id="probRelaxTxt">—</strong></span>
+              <span><span class="dot fail"></span>fail <strong id="probFailTxt">—</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Main grading sample (<em>M</em>)</h2>
+        <p class="section-note">M outputs get double-rated to estimate ICC for the main study. ICC(1,1) with finite-population correction.</p>
+
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <span class="label-block">
+                <label class="ctrl-label" for="nIn">Sample size <span class="sym">M</span> (outputs)</label>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About M">i<span class="info-content" role="tooltip">
+                  <strong>Sample size M</strong>
+                  <p>Outputs double-rated to estimate ICC in the main study — distinct from the calibration set k.</p>
+                  <p>Drives the CI width and statistical power shown below. Workload scales as <code>M × 2</code> rating sessions.</p>
+                </span></span>
+              </span>
+              <span class="ctrl-val" id="nOut">200</span>
+            </div>
+            <input type="range" id="nIn" min="10" max="5000" step="1" value="200" />
           </div>
 
           <div class="ctrl-row">
@@ -443,14 +632,24 @@
                 <label class="ctrl-label" for="tIn">Threshold <span class="sym">ρ</span><sub>0</sub> for power</label>
                 <span class="info-tip" tabindex="0" role="button" aria-label="About threshold rho-zero">i<span class="info-content" role="tooltip">
                   <strong>Power threshold (ρ₀)</strong>
-                  <p>The minimum ICC value you need to demonstrate — the bar your study must clear.</p>
-                  <p><em>Power</em> shown above is the probability that the lower bound of your CI stays above ρ₀, letting you claim "agreement is at least ρ₀."</p>
-                  <p style="color: var(--ink-3); font-size: 12px;">For a meaningful calculation, set ρ₀ below your assumed ρ — e.g., ρ = 0.70 with ρ₀ = 0.50 asks "if agreement is really 0.70, how often can I prove it's above 0.50?"</p>
+                  <p>The minimum ICC value you want to demonstrate with statistical certainty in the main sample.</p>
+                  <p><em>Power</em> below is the probability that the CI lower bound stays above ρ₀ — a more conservative test than the calibration check, which only requires the point estimate to clear the threshold.</p>
+                  <p style="color: var(--ink-3); font-size: 12px;">Set ρ₀ below your assumed ρ for a meaningful calculation.</p>
                 </span></span>
               </span>
-              <span class="ctrl-val" id="tOut">0.50</span>
+              <span class="ctrl-val" id="tOut">0.70</span>
             </div>
-            <input type="range" id="tIn" min="0" max="0.9" step="0.01" value="0.50" />
+            <input type="range" id="tIn" min="0" max="0.9" step="0.01" value="0.70" />
+          </div>
+
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <label class="ctrl-label">Rating effort</label>
+              <span class="ctrl-val" id="ratingsOut">—</span>
+            </div>
+            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3); padding-top: 4px;">
+              <span><strong class="accent" id="fracOut">—</strong> sampling fraction · M × 2 sessions ≈ <span id="hoursEst">—</span></span>
+            </div>
           </div>
 
           <div class="toggle-row" style="grid-column: 1 / -1;">
@@ -460,35 +659,17 @@
             </label>
             <span class="info-tip" tabindex="0" role="button" aria-label="About joint-confidence mode">i<span class="info-content" role="tooltip">
               <strong>Joint-confidence mode</strong>
-              <p>When you report several ICCs (here, 3 rater pairs × the number of criteria), each test carries its own error rate. Without adjustment, the chance that <em>at least one</em> shows a spuriously favourable result grows with the count.</p>
+              <p>When you report several ICCs (3 rater pairs × D dimensions), each test carries its own error rate. Without adjustment, the chance that <em>at least one</em> shows a spuriously favourable result grows with the count.</p>
               <p>Switching this on applies a Bonferroni correction: α is divided by the number of ICCs, so each individual test must clear a higher bar.</p>
-              <p style="color: var(--ink-3); font-size: 12px;">The result: wider CIs and lower per-ICC power, but the confidence level you set now applies to the <em>joint</em> claim (e.g., "all 9 ICCs exceed ρ₀") rather than to each ICC in isolation.</p>
+              <p style="color: var(--ink-3); font-size: 12px;">Result: wider CIs and lower per-ICC power, but the confidence level now applies to the <em>joint</em> claim.</p>
             </span></span>
-            <span class="toggle-detail" id="jointDetail">3 pairs × 3 criteria = 9 ICCs · Bonferroni when on</span>
+            <span class="toggle-detail" id="jointDetail">3 pairs × 6 dimensions = 18 ICCs · Bonferroni when on</span>
           </div>
-        </div>
-
-        <div class="sampling-summary">
-          <span><strong class="accent" id="fracOut">—</strong> sampling fraction at N</span>
-          <span><strong id="respGradedOut">—</strong> responses graded (N × responses)</span>
-          <span style="display: inline-flex; align-items: center; gap: 8px;">
-            <span><strong id="ratingsOut">—</strong> human ratings needed (N × responses × 2)</span>
-            <span class="info-tip" tabindex="0" role="button" aria-label="How this number is computed">i<span class="info-content" role="tooltip">
-              <strong>Total human ratings</strong>
-              <p>The number of rating decisions your two humans will make in total.</p>
-              <span class="bands">
-                <span>N</span><span>participants sampled</span>
-                <span>× responses</span><span>responses per participant</span>
-                <span>× 2</span><span>human raters (H1 and H2)</span>
-              </span>
-              <p style="color: var(--ink-3); font-size: 12px;">Each human individually does N × responses ratings, so divide by 2 to get per-rater workload.</p>
-            </span></span>
-          </span>
         </div>
       </section>
 
       <section>
-        <h2>Results</h2>
+        <h2>Main-grading results</h2>
         <p class="section-note">Across simulated samples drawn under the assumed ρ, with integer ratings.</p>
 
         <div class="metrics">
@@ -508,27 +689,27 @@
             <div class="metric-sub" id="mPowSub">P(CI lower &gt; ρ₀)</div>
           </div>
           <div class="metric">
-            <div class="metric-label">N for ± 0.10 precision</div>
+            <div class="metric-label">M for ± 0.10 precision</div>
             <div class="metric-val" id="mNeed">—</div>
-            <div class="metric-sub">participants, FPC-adjusted</div>
+            <div class="metric-sub">outputs, FPC-adjusted</div>
           </div>
         </div>
       </section>
 
       <section>
         <div class="chart-card">
-          <h3 class="chart-title">Sampling distribution of ICC</h3>
+          <h3 class="chart-title">Sampling distribution of ICC (at M)</h3>
           <p class="chart-sub">Simulated samples · vertical line marks the true ρ</p>
           <div class="chart-wrap">
-            <canvas id="histChart" role="img" aria-label="Histogram of simulated ICC estimates clustered around the true value, with a vertical reference line at the assumed ICC.">Histogram of simulated ICC estimates.</canvas>
+            <canvas id="histChart" role="img" aria-label="Histogram of simulated ICC estimates clustered around the true value.">Histogram of simulated ICC estimates.</canvas>
           </div>
         </div>
 
         <div class="chart-card">
           <h3 class="chart-title">Precision curve</h3>
-          <p class="chart-sub">CI half-width versus N (participants) · current N highlighted</p>
+          <p class="chart-sub">CI half-width versus M (outputs) · current M highlighted</p>
           <div class="chart-wrap">
-            <canvas id="curveChart" role="img" aria-label="Line chart showing the confidence interval half-width shrinking as sample size increases, with the currently selected N marked.">Precision curve: half-width versus N.</canvas>
+            <canvas id="curveChart" role="img" aria-label="CI half-width shrinking as sample size increases, with the currently selected M marked.">Precision curve.</canvas>
           </div>
         </div>
       </section>
@@ -536,42 +717,70 @@
     </div>
 
     <aside class="side-col">
-      <div class="notes-panel">
-        <p class="notes-panel-eyebrow">Notes &amp; methodology</p>
+      <div class="right-stack">
 
-        <h3>What N means</h3>
-        <p>N is the number of <em>participants</em> sampled, not the number of responses. Each sampled participant contributes all R of their responses, so the effective ICC sample is <code>N × R</code>. Sliding N up adds whole batches of R responses at a time.</p>
+        <div class="recommendations">
+          <p class="rec-eyebrow">Recommended values</p>
 
-        <h3>Data-generating model</h3>
-        <p>Each response is drawn as <code>y_ij = μ + s·(α_i + e_ij)</code> with <code>Var(α) = ρ</code>, <code>Var(e) = 1 − ρ</code>. The latent score is shifted to the centre of your rating scale, scaled so that ±2 SD covers the range, then rounded to integer and clipped to the scale bounds — mimicking real 1–10 ratings, including the slight ICC attenuation from discretization.</p>
+          <div class="rec-item">
+            <div class="rec-head">
+              <span class="rec-name">Calibration k</span>
+              <button class="rec-apply" id="applyK" data-target="kCalIn">apply →</button>
+            </div>
+            <div class="rec-value">
+              <strong id="recK">—</strong><span class="rec-value-suffix">outputs</span>
+            </div>
+            <p class="rec-note" id="recKNote">—</p>
+          </div>
 
-        <h3>Estimator and CI</h3>
-        <p>ICC is computed as <code>(MS_between − MS_within) / (MS_between + MS_within)</code> — one-way random-effects, ICC(1,1). The CI uses the Fisher-z transform <code>W = ½·log((1+r)/(1−r))</code> with <code>SE(W) ≈ 1/√(N_eff − 2) · √((Pop − N_eff) / (Pop − 1))</code>. The second factor is the finite-population correction (matters when your sample is a non-trivial fraction of the pool).</p>
-
-        <h3>Required-N formula</h3>
-        <p>Bonett (2002): <code>n₀ ≈ 1 + 8z²(1−ρ)²(1+ρ)² / (2w²)</code> for half-width w. With FPC and converted back to participants, <code>N = ⌈n₀·Pop / (Pop + n₀ − 1) / R⌉</code>.</p>
-
-        <h3>Multiple ICCs</h3>
-        <p>With 3 rater pairs (H1–H2, AI–H1, AI–H2) × C criteria, you'll report 3C separate ICCs. Joint-confidence mode applies Bonferroni: divides α by 3C, so each individual ICC must clear a higher bar. Wider CIs, lower per-ICC power, valid joint claim.</p>
-
-        <h3>Clustering</h3>
-        <p>Responses from the same participant tend to be correlated. The simulator treats responses as independent for ICC computation, which is the standard inter-rater convention but slightly understates variance if within-participant agreement is high. If that's a concern, multiply N by the design effect <code>1 + (R−1)·ρ_intra</code> as a buffer.</p>
-
-        <h3>Discrete 1–10 ratings</h3>
-        <p>The simulator already rounds to your chosen scale. The discretization gap to a continuous ICC is small for ρ ≲ 0.9; above that, add a 10–15% buffer to N.</p>
-
-        <div class="refs">
-          <p><em>Koo, T. K., &amp; Li, M. Y.</em> (2016). A guideline of selecting and reporting intraclass correlation coefficients for reliability research. <em>J. Chiropr. Med.</em>, 15(2), 155–163.</p>
-          <p><em>Bonett, D. G.</em> (2002). Sample size requirements for estimating intraclass correlations with desired precision. <em>Statistics in Medicine</em>, 21(9), 1331–1335.</p>
-          <p><em>Walter, S. D., Eliasziw, M., &amp; Donner, A.</em> (1998). Sample size and optimal designs for reliability studies. <em>Statistics in Medicine</em>, 17(1), 101–110.</p>
+          <div class="rec-item">
+            <div class="rec-head">
+              <span class="rec-name">Main sample M</span>
+              <button class="rec-apply" id="applyM" data-target="nIn">apply →</button>
+            </div>
+            <div class="rec-value">
+              <strong id="recM">—</strong><span class="rec-value-suffix">outputs</span>
+            </div>
+            <p class="rec-note" id="recMNote">—</p>
+          </div>
         </div>
+
+        <div class="notes-panel">
+          <p class="notes-panel-eyebrow">Notes &amp; methodology</p>
+
+          <h3>k vs. M</h3>
+          <p><em>k</em> is the calibration sample — outputs double-rated <em>before</em> main grading begins to verify the rubric is reliable. <em>M</em> is the sample size for the actual ICC estimate in the main study, drawn separately.</p>
+
+          <h3>Calibration vs. CI-based power</h3>
+          <p>The calibration check uses the <em>point estimate</em>: pass if observed r ≥ 0.70, relaxed band if 0.65 ≤ r &lt; 0.70. The "Power vs ρ₀" metric is more conservative — it uses the <em>CI lower bound</em>: pass if the lower bound exceeds ρ₀. Both derive from the same Fisher-z sampling distribution but answer different questions.</p>
+
+          <h3>How the recommendations are derived</h3>
+          <p><strong style="color: var(--ink); font-style: normal;">k</strong> is the smallest size giving ≥ 90% probability of strict pass at the assumed ρ. If ρ ≤ strict threshold, calibration cannot reliably pass and the recommendation flags the underlying issue.</p>
+          <p><strong style="color: var(--ink); font-style: normal;">M</strong> is the larger of (a) Bonett's N for ±0.10 CI half-width and (b) the N for ≥ 80% power that the CI lower bound exceeds ρ₀. The binding criterion is noted.</p>
+
+          <h3>Data-generating model</h3>
+          <p>Each output is drawn as <code>y_ij = μ + s·(α_i + e_ij)</code> with <code>Var(α) = ρ</code>, <code>Var(e) = 1 − ρ</code>. The latent score is shifted to the centre of the rating scale, scaled so ±2 SD covers the range, then rounded and clipped to the scale bounds.</p>
+
+          <h3>Estimator and CI</h3>
+          <p>ICC is computed as <code>(MS_between − MS_within) / (MS_between + MS_within)</code> — one-way random-effects, ICC(1,1). CI uses Fisher-z: <code>W = ½·log((1+r)/(1−r))</code>, <code>SE(W) ≈ 1/√(n−2) · √((Pop−n)/(Pop−1))</code>.</p>
+
+          <h3>Multiple ICCs</h3>
+          <p>With 3 rater pairs × D dimensions, you'll report 3D separate ICCs in the main study. Joint-confidence mode applies Bonferroni: divides α by 3D, so each individual ICC must clear a higher bar.</p>
+
+          <div class="refs">
+            <p><em>Koo, T. K., &amp; Li, M. Y.</em> (2016). A guideline of selecting and reporting intraclass correlation coefficients. <em>J. Chiropr. Med.</em>, 15(2), 155–163.</p>
+            <p><em>Bonett, D. G.</em> (2002). Sample size requirements for estimating intraclass correlations with desired precision. <em>Statistics in Medicine</em>, 21(9), 1331–1335.</p>
+            <p><em>Walter, S. D., Eliasziw, M., &amp; Donner, A.</em> (1998). Sample size and optimal designs for reliability studies. <em>Statistics in Medicine</em>, 17(1), 101–110.</p>
+          </div>
+        </div>
+
       </div>
     </aside>
 
   </div>
 
   <footer>
-    <span>icc-simulator · ICC(1,1) · k=2 raters · FPC · participant-level sampling</span>
+    <span>icc-simulator · ICC(1,1) · k=2 raters · FPC · calibration + main sample</span>
     <span>made with <a href="https://claude.ai">Claude</a></span>
   </footer>
 
@@ -594,7 +803,6 @@
   Chart.defaults.color = COL.ink3;
   if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
 
-  // Acklam's inverse normal CDF
   function qnorm(p){
     const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
     const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
@@ -616,13 +824,33 @@
     }
   }
 
+  function erf(x){
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const p = 0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x);
+    const t = 1.0 / (1.0 + p * x);
+    return sign * (1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x));
+  }
+  function pnorm(x){ return 0.5 * (1 + erf(x / Math.SQRT2)); }
+
+  function fisherW(r){
+    const rc = Math.max(-0.999, Math.min(0.999, r));
+    return 0.5 * Math.log((1+rc)/(1-rc));
+  }
+
   const $ = (id) => document.getElementById(id);
   const nIn = $('nIn'), rIn = $('rIn'), cIn = $('cIn'), tIn = $('tIn');
   const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn');
   const jointIn = $('jointIn');
+  const kCalIn = $('kCalIn'), rhoStrictIn = $('rhoStrictIn'), rhoRelaxIn = $('rhoRelaxIn');
   const nOut = $('nOut'), rOut = $('rOut'), cOut = $('cOut'), tOut = $('tOut');
   const cLabel = $('cLabel'), jointDetail = $('jointDetail');
-  const totalOut = $('totalOut'), fracOut = $('fracOut'), ratingsOut = $('ratingsOut'), respGradedOut = $('respGradedOut');
+  const totalOut = $('totalOut'), fracOut = $('fracOut'), ratingsOut = $('ratingsOut'), hoursEst = $('hoursEst');
+  const probStrictSeg = $('probStrictSeg'), probRelaxSeg = $('probRelaxSeg'), probFailSeg = $('probFailSeg');
+  const probStrictTxt = $('probStrictTxt'), probRelaxTxt = $('probRelaxTxt'), probFailTxt = $('probFailTxt');
+  const recK = $('recK'), recM = $('recM'), recKNote = $('recKNote'), recMNote = $('recMNote');
+  const applyK = $('applyK'), applyM = $('applyM');
 
   function gaussian(){
     let u=0,v=0;
@@ -650,97 +878,203 @@
     return (MSB - MSW) / (MSB + MSW);
   }
 
-  function fpc(nEff, pop){
-    if (nEff >= pop) return 0;
-    return Math.sqrt(Math.max(0, (pop - nEff) / (pop - 1)));
+  function fpc(n, pop){
+    if (n >= pop) return 0;
+    return Math.sqrt(Math.max(0, (pop - n) / (pop - 1)));
   }
 
-  function fisherCI(r, nEff, z, pop){
-    const rc = Math.max(-0.999, Math.min(0.999, r));
-    const W = 0.5 * Math.log((1 + rc) / (1 - rc));
-    const seW = (1 / Math.sqrt(Math.max(1, nEff - 2))) * fpc(nEff, pop);
+  function fisherCI(r, n, z, pop){
+    const W = fisherW(r);
+    const seW = (1 / Math.sqrt(Math.max(1, n - 2))) * Math.max(fpc(n, pop), 0.001);
     const wL = W - z * seW, wU = W + z * seW;
     const rL = (Math.exp(2*wL) - 1) / (Math.exp(2*wL) + 1);
     const rU = (Math.exp(2*wU) - 1) / (Math.exp(2*wU) + 1);
     return [rL, rU];
   }
 
-  function ciHalfWidthFromRho(rho, nEff, z, pop){
-    const W = 0.5 * Math.log((1 + rho) / (1 - rho));
-    const seW = (1 / Math.sqrt(Math.max(1, nEff - 2))) * fpc(nEff, pop);
+  function ciHalfWidthFromRho(rho, n, z, pop){
+    const W = fisherW(rho);
+    const seW = (1 / Math.sqrt(Math.max(1, n - 2))) * Math.max(fpc(n, pop), 0.001);
     const rL = (Math.exp(2*(W - z*seW)) - 1) / (Math.exp(2*(W - z*seW)) + 1);
     const rU = (Math.exp(2*(W + z*seW)) - 1) / (Math.exp(2*(W + z*seW)) + 1);
     return (rU - rL) / 2;
   }
 
-  function bonettNResponses(rho, z, halfWidth, pop){
+  function bonettN(rho, z, halfWidth, pop){
     const num = 8 * z*z * (1-rho)*(1-rho) * (1+rho)*(1+rho);
     const den = 2 * (2*halfWidth)*(2*halfWidth);
     const n0 = 1 + num / den;
-    return Math.min(pop, n0 * pop / (pop + n0 - 1));
+    return Math.min(pop, Math.ceil(n0 * pop / (pop + n0 - 1)));
+  }
+
+  function calibProbs(k, rho, rhoStrict, rhoRelax, pop){
+    const W_rho = fisherW(rho);
+    const W_strict = fisherW(rhoStrict);
+    const W_relax = fisherW(rhoRelax);
+    const seW = (1 / Math.sqrt(Math.max(1, k - 2))) * Math.max(fpc(k, pop), 0.001);
+
+    if (seW < 1e-8){
+      return {
+        strict: rho >= rhoStrict ? 1 : 0,
+        relaxedBand: (rho >= rhoRelax && rho < rhoStrict) ? 1 : 0,
+        fail: rho < rhoRelax ? 1 : 0
+      };
+    }
+    const pAtLeastStrict = 1 - pnorm((W_strict - W_rho) / seW);
+    const pAtLeastRelax = 1 - pnorm((W_relax - W_rho) / seW);
+    const strict = Math.max(0, Math.min(1, pAtLeastStrict));
+    const atLeastRelax = Math.max(0, Math.min(1, pAtLeastRelax));
+    const relaxedBand = Math.max(0, atLeastRelax - strict);
+    const fail = Math.max(0, Math.min(1, 1 - atLeastRelax));
+    return { strict, relaxedBand, fail };
+  }
+
+  // Smallest k such that P(strict pass) >= targetProb at the given rho
+  function kForStrictPass(rho, rhoStrict, pop, targetProb){
+    if (rho <= rhoStrict) return null;
+    const W_strict = fisherW(rhoStrict);
+    const W_rho = fisherW(rho);
+    const z = qnorm(1 - targetProb); // negative for target > 0.5
+    const requiredSEW = (W_strict - W_rho) / z;
+    if (!isFinite(requiredSEW) || requiredSEW <= 0) return null;
+    const k0 = 2 + 1/(requiredSEW * requiredSEW);
+    const kFpc = k0 * pop / (pop + k0 - 1);
+    return Math.min(pop, Math.max(5, Math.ceil(kFpc)));
+  }
+
+  // Smallest n such that P(CI_lower > rho0) >= targetPower at the given rho
+  function MForPower(rho, rho0, z, pop, targetPower){
+    if (rho <= rho0) return null;
+    const W_rho = fisherW(rho);
+    const W_0 = fisherW(rho0);
+    const targetSEW = (W_rho - W_0) / (qnorm(targetPower) + z);
+    if (targetSEW <= 0 || !isFinite(targetSEW)) return null;
+    const n0 = 2 + 1/(targetSEW * targetSEW);
+    const nFpc = n0 * pop / (pop + n0 - 1);
+    return Math.min(pop, Math.max(5, Math.ceil(nFpc)));
   }
 
   function readSetup(){
     const participants = Math.max(2, Math.floor(parseFloat(pIn.value) || 1000));
-    const responses = Math.max(1, Math.floor(parseFloat(qIn.value) || 1));
-    const crit = Math.max(1, Math.floor(parseFloat(kIn.value) || 1));
+    const outputs = Math.max(1, Math.floor(parseFloat(qIn.value) || 1));
+    const dims = Math.max(1, Math.floor(parseFloat(kIn.value) || 1));
     const sMin = Math.floor(parseFloat(sMinIn.value));
     const sMax = Math.floor(parseFloat(sMaxIn.value));
-    const total = participants * responses;
+    const total = participants * outputs;
     const scaleMin = Math.min(sMin, sMax - 1);
     const scaleMax = Math.max(sMax, scaleMin + 1);
-    return { participants, responses, crit, total, scaleMin, scaleMax };
+    return { participants, outputs, dims, total, scaleMin, scaleMax };
   }
 
   let histChart, curveChart;
 
   function run(){
     const setup = readSetup();
-    const { participants, responses, total } = setup;
+    const { total } = setup;
     const scaleMin = setup.scaleMin, scaleMax = setup.scaleMax;
     const scaleMid = (scaleMin + scaleMax) / 2;
     const scaleSD = (scaleMax - scaleMin) / 4;
 
-    // N slider bounds: participants
-    if (parseInt(nIn.max) !== participants) {
-      nIn.max = participants;
-      if (parseInt(nIn.value) > participants) nIn.value = participants;
+    if (parseInt(nIn.max) !== total) {
+      nIn.max = total;
+      if (parseInt(nIn.value) > total) nIn.value = total;
     }
 
-    const nParts = parseInt(nIn.value);
-    const nEff = nParts * responses;
+    const M = parseInt(nIn.value);
     const rho = parseFloat(rIn.value);
     const confLevel = CONF[parseInt(cIn.value)];
     const thr = parseFloat(tIn.value);
     const joint = jointIn.checked;
     const PAIRS = 3;
-    const m = joint ? PAIRS * setup.crit : 1;
+    const m = joint ? PAIRS * setup.dims : 1;
     const alpha = 1 - confLevel;
     const alphaPer = alpha / m;
     const z = qnorm(1 - alphaPer/2);
     const perIccLevel = 1 - alphaPer;
 
-    nOut.textContent = nParts.toLocaleString();
+    const kCal = Math.max(5, Math.floor(parseFloat(kCalIn.value) || 50));
+    const rhoStrict = Math.max(0, Math.min(0.999, parseFloat(rhoStrictIn.value) || 0.70));
+    let rhoRelax = Math.max(0, Math.min(0.999, parseFloat(rhoRelaxIn.value) || 0.65));
+    if (rhoRelax >= rhoStrict) rhoRelax = Math.max(0, rhoStrict - 0.01);
+
+    nOut.textContent = M.toLocaleString();
     rOut.textContent = rho.toFixed(2);
     cOut.textContent = (confLevel*100).toFixed(0) + '%' + (joint ? ' joint' : '');
     cLabel.textContent = joint ? 'Joint confidence level' : 'Confidence level';
     tOut.textContent = thr.toFixed(2);
-    const nIccs = PAIRS * setup.crit;
-    const critLabel = setup.crit === 1 ? '1 criterion' : setup.crit + ' criteria';
+    const nIccs = PAIRS * setup.dims;
+    const dimLabel = setup.dims === 1 ? '1 dimension' : setup.dims + ' dimensions';
     if (joint) {
-      jointDetail.textContent = `${PAIRS} pairs × ${critLabel} = ${nIccs} ICCs · per-ICC level ≈ ${(perIccLevel*100).toFixed(2)}% (z = ${z.toFixed(2)})`;
+      jointDetail.textContent = `${PAIRS} pairs × ${dimLabel} = ${nIccs} ICCs · per-ICC level ≈ ${(perIccLevel*100).toFixed(2)}% (z = ${z.toFixed(2)})`;
       jointDetail.classList.add('active');
     } else {
-      jointDetail.textContent = `${PAIRS} pairs × ${critLabel} = ${nIccs} ICCs · Bonferroni when on`;
+      jointDetail.textContent = `${PAIRS} pairs × ${dimLabel} = ${nIccs} ICCs · Bonferroni when on`;
       jointDetail.classList.remove('active');
     }
-    totalOut.textContent = total.toLocaleString();
-    fracOut.textContent = ((nParts/participants)*100).toFixed(1) + '%';
-    respGradedOut.textContent = nEff.toLocaleString();
-    ratingsOut.textContent = (nEff * 2).toLocaleString();
 
-    // Adaptive simulation count based on effective N
-    const N_SIMS = Math.max(300, Math.min(1500, Math.floor(2_000_000 / Math.max(50, nEff))));
+    totalOut.textContent = total.toLocaleString();
+    fracOut.textContent = ((M/total)*100).toFixed(1) + '%';
+    const sessions = M * 2;
+    ratingsOut.textContent = sessions.toLocaleString() + ' sessions';
+    const hours = (sessions * 12) / 60;
+    hoursEst.textContent = hours < 100 ? hours.toFixed(0) + ' hours' : (hours/8).toFixed(0) + ' rater-days';
+
+    // Calibration outcomes at current k
+    const cp = calibProbs(kCal, rho, rhoStrict, rhoRelax, total);
+    const pct = (v) => (v*100).toFixed(1) + '%';
+    probStrictTxt.textContent = pct(cp.strict);
+    probRelaxTxt.textContent = pct(cp.relaxedBand);
+    probFailTxt.textContent = pct(cp.fail);
+    probStrictSeg.style.flexBasis = (cp.strict*100) + '%';
+    probRelaxSeg.style.flexBasis = (cp.relaxedBand*100) + '%';
+    probFailSeg.style.flexBasis = (cp.fail*100) + '%';
+    probStrictSeg.textContent = cp.strict >= 0.04 ? pct(cp.strict) : '';
+    probRelaxSeg.textContent = cp.relaxedBand >= 0.04 ? pct(cp.relaxedBand) : '';
+    probFailSeg.textContent = cp.fail >= 0.04 ? pct(cp.fail) : '';
+
+    // --- Recommendations ---
+    // k recommendation
+    const kRec = kForStrictPass(rho, rhoStrict, total, 0.90);
+    if (kRec !== null) {
+      recK.textContent = kRec.toLocaleString();
+      recKNote.innerHTML = `Gets you to <em>≥ 90% chance of strict pass</em> at ρ = ${rho.toFixed(2)}. The proposal's pre-registered k = 50 gives ${pct(cp.strict)} strict pass.`;
+      applyK.classList.remove('disabled');
+      applyK.dataset.value = kRec;
+    } else {
+      recK.textContent = '—';
+      if (rho <= rhoRelax) {
+        recKNote.innerHTML = `<span class="warn">Calibration likely to fail</span> at ρ = ${rho.toFixed(2)} (below relaxed threshold ${rhoRelax.toFixed(2)}). No k can fix this — rubric or raters need re-training first.`;
+      } else {
+        recKNote.innerHTML = `<span class="warn">Strict pass unreliable</span> at ρ = ${rho.toFixed(2)} (at or below strict threshold ${rhoStrict.toFixed(2)}). At best, k = 50 gives ${pct(cp.strict)} strict pass; relaxed band would dominate.`;
+      }
+      applyK.classList.add('disabled');
+      delete applyK.dataset.value;
+    }
+
+    // M recommendation
+    const mPrecision = bonettN(rho, z, 0.10, total);
+    const mPower = MForPower(rho, thr, z, total, 0.80);
+    let mRec, binding;
+    if (mPower !== null && mPower > mPrecision) {
+      mRec = mPower;
+      binding = 'power';
+    } else {
+      mRec = mPrecision;
+      binding = 'precision';
+    }
+    recM.textContent = mRec.toLocaleString();
+    if (binding === 'power') {
+      recMNote.innerHTML = `Reaches <em>80% power vs ρ₀ = ${thr.toFixed(2)}</em>. Precision target (±0.10) already met at M = ${mPrecision.toLocaleString()}.`;
+    } else if (mPower !== null) {
+      recMNote.innerHTML = `Reaches <em>±0.10 CI half-width</em>. 80% power vs ρ₀ already met at M = ${mPower.toLocaleString()}.`;
+    } else {
+      recMNote.innerHTML = `Reaches <em>±0.10 CI half-width</em>. <span class="warn">Power target unreachable</span>: ρ = ${rho.toFixed(2)} is at or below ρ₀ = ${thr.toFixed(2)}.`;
+    }
+    applyM.classList.remove('disabled');
+    applyM.dataset.value = mRec;
+
+    // --- Monte Carlo for the main panel ---
+    const N_SIMS = Math.max(300, Math.min(1500, Math.floor(2_000_000 / Math.max(50, M))));
 
     const sigmaA = Math.sqrt(rho);
     const sigmaE = Math.sqrt(1 - rho);
@@ -755,8 +1089,8 @@
     }
 
     for (let s=0; s<N_SIMS; s++){
-      const data = new Array(nEff);
-      for (let i=0;i<nEff;i++){
+      const data = new Array(M);
+      for (let i=0;i<M;i++){
         const a = sigmaA * gaussian();
         data[i] = [
           toScale(a + sigmaE*gaussian()),
@@ -765,7 +1099,7 @@
       }
       const r = iccOneWay(data);
       estimates[s] = r;
-      const [rL, rU] = fisherCI(r, nEff, z, total);
+      const [rL, rU] = fisherCI(r, M, z, total);
       widthSum += (rU - rL);
       if (rL > thr) powerCount++;
     }
@@ -776,19 +1110,15 @@
     const p975 = sorted[Math.floor(0.975*N_SIMS)];
     const meanHW = (widthSum / N_SIMS) / 2;
     const power = powerCount / N_SIMS;
-
-    // Required participants for ±0.10 precision
-    const needResponses = bonettNResponses(rho, z, 0.10, total);
-    const needParts = Math.min(participants, Math.ceil(needResponses / responses));
+    const needM = bonettN(rho, z, 0.10, total);
 
     $('mMean').textContent = mean.toFixed(3);
     $('mInt').textContent = `empirical 95%: [${p025.toFixed(2)}, ${p975.toFixed(2)}]`;
     $('mHW').textContent = '± ' + meanHW.toFixed(3);
     $('mPow').textContent = (power*100).toFixed(0) + '%';
     $('mPowSub').textContent = `at ρ₀ = ${thr.toFixed(2)}`;
-    $('mNeed').textContent = needParts.toLocaleString();
+    $('mNeed').textContent = needM.toLocaleString();
 
-    // Histogram
     const lo = Math.max(-0.2, Math.min(p025, rho - 0.4) - 0.05);
     const hi = Math.min(1.05, Math.max(p975, rho + 0.4) + 0.05);
     const bins = 36;
@@ -858,16 +1188,15 @@
       }
     });
 
-    // Precision curve: x-axis is participants
     const ns = [], hws = [];
-    const nMaxCurve = Math.min(participants, Math.max(100, nParts + 50));
+    const nMaxCurve = Math.min(total, Math.max(500, M + 200));
     const step = Math.max(1, Math.round(nMaxCurve / 80));
-    for (let nn=Math.max(2, step); nn<=nMaxCurve; nn+=step){
+    for (let nn=Math.max(5, step); nn<=nMaxCurve; nn+=step){
       ns.push(nn);
-      hws.push(ciHalfWidthFromRho(rho, nn * responses, z, total));
+      hws.push(ciHalfWidthFromRho(rho, nn, z, total));
     }
-    const currentHW = ciHalfWidthFromRho(rho, nEff, z, total);
-    const nIdx = ns.findIndex(v => v >= nParts);
+    const currentHW = ciHalfWidthFromRho(rho, M, z, total);
+    const nIdx = ns.findIndex(v => v >= M);
 
     if (curveChart) curveChart.destroy();
     curveChart = new Chart($('curveChart'), {
@@ -889,7 +1218,7 @@
             titleFont: { family: FONT, size: 12 },
             bodyFont: { family: FONT, size: 12 },
             callbacks: {
-              title: (items) => 'N = ' + items[0].label + ' participants',
+              title: (items) => 'M = ' + items[0].label + ' outputs',
               label: (item) => '± ' + item.parsed.y.toFixed(3)
             }
           },
@@ -905,7 +1234,7 @@
               },
               nLabel: {
                 type: 'label', xValue: nIdx, yValue: currentHW,
-                content: ['N = ' + nParts.toLocaleString(), '± ' + currentHW.toFixed(3)],
+                content: ['M = ' + M.toLocaleString(), '± ' + currentHW.toFixed(3)],
                 color: COL.warn,
                 font: { family: FONT, size: 11, weight: '500' },
                 backgroundColor: 'rgba(246,242,233,0.92)', padding: 6,
@@ -919,7 +1248,7 @@
           x: {
             ticks: { autoSkip: true, maxTicksLimit: 10, font: {size: 11} },
             grid: { display: false }, border: { color: COL.rule },
-            title: { display: true, text: 'N (participants)', font: {size: 12}, color: COL.ink3 }
+            title: { display: true, text: 'M (outputs)', font: {size: 12}, color: COL.ink3 }
           },
           y: {
             ticks: { font: {size: 11}, callback: (v) => '± ' + v.toFixed(2) },
@@ -933,9 +1262,26 @@
     });
   }
 
+  // Apply buttons
+  function setupApply(btn){
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('disabled')) return;
+      const target = btn.dataset.target;
+      const value = btn.dataset.value;
+      const el = document.getElementById(target);
+      if (el && value){
+        el.value = value;
+        el.dispatchEvent(new Event('input'));
+        el.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+  setupApply(applyK);
+  setupApply(applyM);
+
   let timer = null;
   function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
-  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn].forEach(el => {
+  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn].forEach(el => {
     el.addEventListener('input', debounced);
     el.addEventListener('change', debounced);
   });
