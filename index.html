@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ICC sample-size simulator</title>
+<meta name="description" content="Monte-Carlo simulator for choosing sample size when measuring intraclass correlation between raters." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F6F2E9;
+    --bg-card: #FFFCF4;
+    --ink: #1B1C20;
+    --ink-2: #4A4944;
+    --ink-3: #807D72;
+    --rule: #DDD6C7;
+    --rule-2: #C7C0AD;
+    --accent: #2C5A4A;
+    --accent-soft: #D9E5DF;
+    --warn: #B45A3C;
+    --warn-soft: #F4E0D5;
+    --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Hanken Grotesk', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--sans); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .page { max-width: 1280px; margin: 0 auto; padding: 56px 32px 72px; }
+
+  header { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 36px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 500; font-size: 44px;
+    line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 14px;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .lede {
+    font-family: var(--serif); font-size: 18px; line-height: 1.5;
+    color: var(--ink-2); max-width: 620px; margin: 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 48px;
+    align-items: start;
+  }
+  .main-col > section { margin-bottom: 44px; }
+  .main-col > section:last-child { margin-bottom: 0; }
+
+  h2 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px;
+    margin: 0 0 4px; letter-spacing: -0.01em;
+  }
+  .section-note { font-size: 13px; color: var(--ink-3); margin: 0 0 20px; }
+
+  .setup, .controls {
+    padding: 24px 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 22px 32px;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 32px;
+  }
+  .ctrl-row { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .ctrl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
+  .ctrl-label { font-size: 13px; color: var(--ink-2); letter-spacing: 0.005em; }
+  .ctrl-label .sym { font-family: var(--serif); font-style: italic; }
+  .ctrl-val {
+    font-family: var(--mono); font-size: 13px; color: var(--ink);
+    font-feature-settings: "tnum"; white-space: nowrap;
+  }
+
+  .setup-summary, .sampling-summary {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--rule);
+    display: flex;
+    gap: 28px 36px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    letter-spacing: 0.01em;
+  }
+  .setup-summary strong, .sampling-summary strong {
+    font-family: var(--serif); font-weight: 500; font-size: 18px;
+    color: var(--ink); margin-right: 4px; font-feature-settings: "tnum";
+  }
+  .sampling-summary {
+    margin: 14px 0 0; padding: 16px 28px 0; border-top: none;
+  }
+  .sampling-summary strong.accent { color: var(--accent); }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 18px; background: transparent; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--rule-2); border-radius: 1px; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--rule-2); border-radius: 1px; }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg-card);
+    margin-top: -7px; box-shadow: 0 0 0 1px var(--accent);
+    transition: transform .12s ease;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg-card);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  input[type="number"] {
+    font-family: var(--mono); font-size: 14px; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--rule-2);
+    border-radius: 3px; padding: 6px 8px; width: 100%;
+    font-feature-settings: "tnum";
+  }
+  input[type="number"]:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
+  .scale-pair { display: flex; align-items: center; gap: 8px; }
+  .scale-pair input { width: 70px; flex: 0 0 70px; }
+  .scale-pair span { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden;
+  }
+  .metric { background: var(--bg-card); padding: 18px 20px 20px; min-height: 110px; }
+  .metric-label {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+  }
+  .metric-val {
+    font-family: var(--serif); font-size: 32px; line-height: 1;
+    font-weight: 500; font-feature-settings: "tnum", "lnum"; color: var(--ink);
+  }
+  .metric-val.accent { color: var(--accent); }
+  .metric-sub {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    margin-top: 8px; font-feature-settings: "tnum";
+  }
+
+  .chart-card {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    border-radius: 4px; padding: 22px 26px 26px;
+  }
+  .chart-card + .chart-card { margin-top: 20px; }
+  .chart-title { font-family: var(--serif); font-size: 16px; font-weight: 500; margin: 0; }
+  .chart-sub {
+    font-size: 12px; color: var(--ink-3); margin: 2px 0 16px;
+    font-family: var(--mono); letter-spacing: 0.02em;
+  }
+  .chart-wrap { position: relative; width: 100%; height: 240px; }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 16px; margin-top: 6px;
+    border-top: 1px dashed var(--rule); flex-wrap: wrap;
+  }
+  .toggle-row > label {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; font-size: 13.5px; color: var(--ink);
+    font-weight: 500; user-select: none;
+  }
+  .toggle-row input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--rule-2); border-radius: 3px;
+    background: var(--bg); cursor: pointer; position: relative;
+    transition: all .15s ease; flex-shrink: 0;
+  }
+  .toggle-row input[type="checkbox"]:checked {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .toggle-row input[type="checkbox"]:checked::after {
+    content: ""; position: absolute; left: 4px; top: 0px;
+    width: 4px; height: 9px; border: solid white;
+    border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+  }
+  .toggle-detail {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-3); letter-spacing: 0.01em;
+  }
+  .toggle-detail.active { color: var(--accent); }
+
+  .label-block { display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+  .info-tip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%;
+    border: 1px solid var(--rule-2); background: transparent;
+    color: var(--ink-3); font-family: var(--serif); font-style: italic;
+    font-size: 11px; font-weight: 500; cursor: help; position: relative;
+    line-height: 1; flex-shrink: 0; transition: all .15s ease;
+  }
+  .info-tip:hover, .info-tip:focus {
+    border-color: var(--accent); color: var(--accent); outline: none;
+  }
+  .info-content {
+    position: absolute; top: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%); width: 280px;
+    max-width: calc(100vw - 40px);
+    background: var(--bg-card); border: 1px solid var(--rule);
+    border-radius: 5px; padding: 14px 16px;
+    font-family: var(--sans); font-size: 12.5px; line-height: 1.55;
+    color: var(--ink-2); font-style: normal; font-weight: 400;
+    letter-spacing: 0; text-align: left; z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity .15s ease;
+    box-shadow: 0 8px 24px rgba(27, 28, 32, 0.08), 0 2px 6px rgba(27, 28, 32, 0.05);
+  }
+  .info-content::before {
+    content: ""; position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%); border: 6px solid transparent;
+    border-bottom-color: var(--rule);
+  }
+  .info-content::after {
+    content: ""; position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%); border: 5px solid transparent;
+    border-bottom-color: var(--bg-card); margin-bottom: -1px;
+  }
+  .info-tip:hover .info-content,
+  .info-tip:focus .info-content,
+  .info-tip:focus-within .info-content {
+    opacity: 1; pointer-events: auto;
+  }
+  .info-content strong {
+    font-family: var(--serif); font-weight: 500; font-size: 14.5px;
+    color: var(--ink); display: block; margin-bottom: 6px; font-style: normal;
+  }
+  .info-content p { margin: 0 0 8px; }
+  .info-content p:last-child { margin-bottom: 0; }
+  .info-content .bands {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 3px 12px; margin: 10px 0 8px; padding: 8px 0;
+    border-top: 1px dashed var(--rule); border-bottom: 1px dashed var(--rule);
+    font-family: var(--mono); font-size: 11.5px;
+  }
+  .info-content .bands span:nth-child(odd) {
+    color: var(--accent); font-weight: 500; font-feature-settings: "tnum";
+  }
+  .info-content .bands span:nth-child(even) { color: var(--ink-2); }
+  .info-content .cite {
+    display: block; margin-top: 6px; font-family: var(--mono);
+    font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.04em;
+  }
+
+  /* Right-rail methodology panel */
+  .side-col {
+    position: sticky; top: 32px; align-self: start;
+  }
+  .notes-panel {
+    background: transparent;
+    border-left: 1px solid var(--rule);
+    padding: 4px 0 4px 32px;
+    font-size: 13.5px; line-height: 1.6;
+    color: var(--ink-2);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule-2) transparent;
+  }
+  .notes-panel::-webkit-scrollbar { width: 6px; }
+  .notes-panel::-webkit-scrollbar-thumb { background: var(--rule-2); border-radius: 3px; }
+  .notes-panel-eyebrow {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px;
+  }
+  .notes-panel h3 {
+    font-family: var(--serif); font-weight: 500; font-size: 15.5px;
+    color: var(--ink); margin: 22px 0 6px; letter-spacing: -0.005em;
+  }
+  .notes-panel h3:first-of-type { margin-top: 0; }
+  .notes-panel p { margin: 0 0 10px; }
+  .notes-panel code {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 1px 5px; border-radius: 3px;
+  }
+  .notes-panel .refs {
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px dashed var(--rule);
+    font-size: 12px; color: var(--ink-3); line-height: 1.55;
+  }
+  .notes-panel .refs p { margin: 0 0 6px; }
+  .notes-panel .refs em { font-family: var(--serif); }
+
+  footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  footer a { color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--ink-3); }
+
+  @media (max-width: 1080px) {
+    .layout { grid-template-columns: 1fr; gap: 36px; }
+    .side-col { position: static; }
+    .notes-panel { border-left: none; border-top: 1px solid var(--rule); padding: 24px 0 0; max-height: none; }
+  }
+  @media (max-width: 720px) {
+    .page { padding: 36px 20px 56px; }
+    h1 { font-size: 32px; }
+    .controls, .setup-grid { grid-template-columns: 1fr; gap: 18px; }
+    .controls, .setup { padding: 20px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metric { min-height: 96px; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="eyebrow">Sample-size tool · Monte Carlo</p>
+    <h1>Choosing <em>N</em> for an intraclass correlation</h1>
+    <p class="lede">You have a fixed pool of AI-rated responses and want to hand a sample to two humans. Set the study assumptions and the simulator shows how precisely you'll estimate ICC at each sample size.</p>
+  </header>
+
+  <div class="layout">
+
+    <div class="main-col">
+
+      <section>
+        <h2>Study setup</h2>
+        <p class="section-note">The pool you're sampling from. Each response is an integer rating on a fixed scale.</p>
+
+        <div class="setup">
+          <div class="setup-grid">
+            <div class="ctrl-row">
+              <div class="ctrl-head"><label class="ctrl-label" for="pIn">Participants</label></div>
+              <input type="number" id="pIn" min="2" max="100000" step="1" value="1000" />
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head"><label class="ctrl-label" for="qIn">Responses per participant</label></div>
+              <input type="number" id="qIn" min="1" max="200" step="1" value="9" />
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="kIn">Criteria per response</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About criteria">i<span class="info-content" role="tooltip">
+                    <strong>Criteria per response</strong>
+                    <p>Number of rubric items each response is judged on (e.g., clarity, accuracy, fluency). Used only by joint-confidence mode to count how many ICCs you'll be reporting: <code>3 pairs × C criteria</code>. Does not affect grading workload, since the assumption here is one rating per response.</p>
+                  </span></span>
+                </span>
+              </div>
+              <input type="number" id="kIn" min="1" max="20" step="1" value="3" />
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head"><label class="ctrl-label">Rating scale</label></div>
+              <div class="scale-pair">
+                <input type="number" id="sMinIn" min="0" max="50" step="1" value="1" />
+                <span>to</span>
+                <input type="number" id="sMaxIn" min="2" max="100" step="1" value="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="setup-summary">
+            <span><strong id="totalOut">9,000</strong> total responses in pool</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Sampling parameters</h2>
+        <p class="section-note">Two human raters, single measurement, ICC(1,1) with finite-population correction.</p>
+
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <span class="label-block">
+                <label class="ctrl-label" for="nIn">Sample size <span class="sym">N</span> (participants)</label>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About N">i<span class="info-content" role="tooltip">
+                  <strong>Sample size N</strong>
+                  <p>The number of <em>participants</em> you'll sample for human grading. Each sampled participant contributes their full set of responses (R per participant) to the rating exercise.</p>
+                  <p>Effective ICC sample size is therefore <code>N × R</code> responses, which is what determines CI width in the calculations below.</p>
+                </span></span>
+              </span>
+              <span class="ctrl-val" id="nOut">30</span>
+            </div>
+            <input type="range" id="nIn" min="2" max="1000" step="1" value="30" />
+          </div>
+
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <span class="label-block">
+                <label class="ctrl-label" for="rIn">Assumed true ICC <span class="sym">ρ</span></label>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About true ICC">i<span class="info-content" role="tooltip">
+                  <strong>True ICC (ρ)</strong>
+                  <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — the value used for planning the sample size.</p>
+                  <span class="bands">
+                    <span>&lt; 0.50</span><span>poor agreement</span>
+                    <span>0.50–0.75</span><span>moderate</span>
+                    <span>0.75–0.90</span><span>good</span>
+                    <span>&gt; 0.90</span><span>excellent</span>
+                  </span>
+                  <span class="cite">Bands from Koo &amp; Li (2016)</span>
+                </span></span>
+              </span>
+              <span class="ctrl-val" id="rOut">0.70</span>
+            </div>
+            <input type="range" id="rIn" min="0" max="0.95" step="0.01" value="0.70" />
+          </div>
+
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <label class="ctrl-label" for="cIn" id="cLabel">Confidence level</label>
+              <span class="ctrl-val" id="cOut">95%</span>
+            </div>
+            <input type="range" id="cIn" min="0" max="2" step="1" value="1" />
+          </div>
+
+          <div class="ctrl-row">
+            <div class="ctrl-head">
+              <span class="label-block">
+                <label class="ctrl-label" for="tIn">Threshold <span class="sym">ρ</span><sub>0</sub> for power</label>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About threshold rho-zero">i<span class="info-content" role="tooltip">
+                  <strong>Power threshold (ρ₀)</strong>
+                  <p>The minimum ICC value you need to demonstrate — the bar your study must clear.</p>
+                  <p><em>Power</em> shown above is the probability that the lower bound of your CI stays above ρ₀, letting you claim "agreement is at least ρ₀."</p>
+                  <p style="color: var(--ink-3); font-size: 12px;">For a meaningful calculation, set ρ₀ below your assumed ρ — e.g., ρ = 0.70 with ρ₀ = 0.50 asks "if agreement is really 0.70, how often can I prove it's above 0.50?"</p>
+                </span></span>
+              </span>
+              <span class="ctrl-val" id="tOut">0.50</span>
+            </div>
+            <input type="range" id="tIn" min="0" max="0.9" step="0.01" value="0.50" />
+          </div>
+
+          <div class="toggle-row" style="grid-column: 1 / -1;">
+            <label>
+              <input type="checkbox" id="jointIn" />
+              <span>Joint-confidence mode</span>
+            </label>
+            <span class="info-tip" tabindex="0" role="button" aria-label="About joint-confidence mode">i<span class="info-content" role="tooltip">
+              <strong>Joint-confidence mode</strong>
+              <p>When you report several ICCs (here, 3 rater pairs × the number of criteria), each test carries its own error rate. Without adjustment, the chance that <em>at least one</em> shows a spuriously favourable result grows with the count.</p>
+              <p>Switching this on applies a Bonferroni correction: α is divided by the number of ICCs, so each individual test must clear a higher bar.</p>
+              <p style="color: var(--ink-3); font-size: 12px;">The result: wider CIs and lower per-ICC power, but the confidence level you set now applies to the <em>joint</em> claim (e.g., "all 9 ICCs exceed ρ₀") rather than to each ICC in isolation.</p>
+            </span></span>
+            <span class="toggle-detail" id="jointDetail">3 pairs × 3 criteria = 9 ICCs · Bonferroni when on</span>
+          </div>
+        </div>
+
+        <div class="sampling-summary">
+          <span><strong class="accent" id="fracOut">—</strong> sampling fraction at N</span>
+          <span><strong id="respGradedOut">—</strong> responses graded (N × responses)</span>
+          <span style="display: inline-flex; align-items: center; gap: 8px;">
+            <span><strong id="ratingsOut">—</strong> human ratings needed (N × responses × 2)</span>
+            <span class="info-tip" tabindex="0" role="button" aria-label="How this number is computed">i<span class="info-content" role="tooltip">
+              <strong>Total human ratings</strong>
+              <p>The number of rating decisions your two humans will make in total.</p>
+              <span class="bands">
+                <span>N</span><span>participants sampled</span>
+                <span>× responses</span><span>responses per participant</span>
+                <span>× 2</span><span>human raters (H1 and H2)</span>
+              </span>
+              <p style="color: var(--ink-3); font-size: 12px;">Each human individually does N × responses ratings, so divide by 2 to get per-rater workload.</p>
+            </span></span>
+          </span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Results</h2>
+        <p class="section-note">Across simulated samples drawn under the assumed ρ, with integer ratings.</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Mean ICC estimate</div>
+            <div class="metric-val" id="mMean">—</div>
+            <div class="metric-sub" id="mInt">empirical 95%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">CI half-width</div>
+            <div class="metric-val" id="mHW">—</div>
+            <div class="metric-sub">on ICC scale</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Power vs ρ₀</div>
+            <div class="metric-val accent" id="mPow">—</div>
+            <div class="metric-sub" id="mPowSub">P(CI lower &gt; ρ₀)</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">N for ± 0.10 precision</div>
+            <div class="metric-val" id="mNeed">—</div>
+            <div class="metric-sub">participants, FPC-adjusted</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="chart-card">
+          <h3 class="chart-title">Sampling distribution of ICC</h3>
+          <p class="chart-sub">Simulated samples · vertical line marks the true ρ</p>
+          <div class="chart-wrap">
+            <canvas id="histChart" role="img" aria-label="Histogram of simulated ICC estimates clustered around the true value, with a vertical reference line at the assumed ICC.">Histogram of simulated ICC estimates.</canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Precision curve</h3>
+          <p class="chart-sub">CI half-width versus N (participants) · current N highlighted</p>
+          <div class="chart-wrap">
+            <canvas id="curveChart" role="img" aria-label="Line chart showing the confidence interval half-width shrinking as sample size increases, with the currently selected N marked.">Precision curve: half-width versus N.</canvas>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="side-col">
+      <div class="notes-panel">
+        <p class="notes-panel-eyebrow">Notes &amp; methodology</p>
+
+        <h3>What N means</h3>
+        <p>N is the number of <em>participants</em> sampled, not the number of responses. Each sampled participant contributes all R of their responses, so the effective ICC sample is <code>N × R</code>. Sliding N up adds whole batches of R responses at a time.</p>
+
+        <h3>Data-generating model</h3>
+        <p>Each response is drawn as <code>y_ij = μ + s·(α_i + e_ij)</code> with <code>Var(α) = ρ</code>, <code>Var(e) = 1 − ρ</code>. The latent score is shifted to the centre of your rating scale, scaled so that ±2 SD covers the range, then rounded to integer and clipped to the scale bounds — mimicking real 1–10 ratings, including the slight ICC attenuation from discretization.</p>
+
+        <h3>Estimator and CI</h3>
+        <p>ICC is computed as <code>(MS_between − MS_within) / (MS_between + MS_within)</code> — one-way random-effects, ICC(1,1). The CI uses the Fisher-z transform <code>W = ½·log((1+r)/(1−r))</code> with <code>SE(W) ≈ 1/√(N_eff − 2) · √((Pop − N_eff) / (Pop − 1))</code>. The second factor is the finite-population correction (matters when your sample is a non-trivial fraction of the pool).</p>
+
+        <h3>Required-N formula</h3>
+        <p>Bonett (2002): <code>n₀ ≈ 1 + 8z²(1−ρ)²(1+ρ)² / (2w²)</code> for half-width w. With FPC and converted back to participants, <code>N = ⌈n₀·Pop / (Pop + n₀ − 1) / R⌉</code>.</p>
+
+        <h3>Multiple ICCs</h3>
+        <p>With 3 rater pairs (H1–H2, AI–H1, AI–H2) × C criteria, you'll report 3C separate ICCs. Joint-confidence mode applies Bonferroni: divides α by 3C, so each individual ICC must clear a higher bar. Wider CIs, lower per-ICC power, valid joint claim.</p>
+
+        <h3>Clustering</h3>
+        <p>Responses from the same participant tend to be correlated. The simulator treats responses as independent for ICC computation, which is the standard inter-rater convention but slightly understates variance if within-participant agreement is high. If that's a concern, multiply N by the design effect <code>1 + (R−1)·ρ_intra</code> as a buffer.</p>
+
+        <h3>Discrete 1–10 ratings</h3>
+        <p>The simulator already rounds to your chosen scale. The discretization gap to a continuous ICC is small for ρ ≲ 0.9; above that, add a 10–15% buffer to N.</p>
+
+        <div class="refs">
+          <p><em>Koo, T. K., &amp; Li, M. Y.</em> (2016). A guideline of selecting and reporting intraclass correlation coefficients for reliability research. <em>J. Chiropr. Med.</em>, 15(2), 155–163.</p>
+          <p><em>Bonett, D. G.</em> (2002). Sample size requirements for estimating intraclass correlations with desired precision. <em>Statistics in Medicine</em>, 21(9), 1331–1335.</p>
+          <p><em>Walter, S. D., Eliasziw, M., &amp; Donner, A.</em> (1998). Sample size and optimal designs for reliability studies. <em>Statistics in Medicine</em>, 17(1), 101–110.</p>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <footer>
+    <span>icc-simulator · ICC(1,1) · k=2 raters · FPC · participant-level sampling</span>
+    <span>made with <a href="https://claude.ai">Claude</a></span>
+  </footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
+<script>
+(function(){
+  const CONF = {0: 0.90, 1: 0.95, 2: 0.99};
+
+  const COL = {
+    ink: '#1B1C20', ink2: '#4A4944', ink3: '#807D72',
+    rule: '#DDD6C7', accent: '#2C5A4A',
+    accentS: 'rgba(44,90,74,0.16)', warn: '#B45A3C', bar: '#7E9B91',
+  };
+
+  const FONT = "'Hanken Grotesk', system-ui, sans-serif";
+  Chart.defaults.font.family = FONT;
+  Chart.defaults.color = COL.ink3;
+  if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+
+  // Acklam's inverse normal CDF
+  function qnorm(p){
+    const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+    const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+    const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+    const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+    const pLow = 0.02425;
+    if (p < pLow){
+      const q = Math.sqrt(-2 * Math.log(p));
+      return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+             ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    } else if (p <= 1 - pLow){
+      const q = p - 0.5; const r = q*q;
+      return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+             (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+    } else {
+      const q = Math.sqrt(-2 * Math.log(1-p));
+      return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+             ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    }
+  }
+
+  const $ = (id) => document.getElementById(id);
+  const nIn = $('nIn'), rIn = $('rIn'), cIn = $('cIn'), tIn = $('tIn');
+  const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn');
+  const jointIn = $('jointIn');
+  const nOut = $('nOut'), rOut = $('rOut'), cOut = $('cOut'), tOut = $('tOut');
+  const cLabel = $('cLabel'), jointDetail = $('jointDetail');
+  const totalOut = $('totalOut'), fracOut = $('fracOut'), ratingsOut = $('ratingsOut'), respGradedOut = $('respGradedOut');
+
+  function gaussian(){
+    let u=0,v=0;
+    while(u===0) u = Math.random();
+    while(v===0) v = Math.random();
+    return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+  }
+
+  function iccOneWay(data){
+    const n = data.length;
+    let grand = 0;
+    for (let i=0;i<n;i++) grand += data[i][0] + data[i][1];
+    grand /= (n*2);
+    let SSB = 0, SSW = 0;
+    for (let i=0;i<n;i++){
+      const m = (data[i][0] + data[i][1]) / 2;
+      const d = m - grand;
+      SSB += 2 * d * d;
+      const e0 = data[i][0] - m, e1 = data[i][1] - m;
+      SSW += e0*e0 + e1*e1;
+    }
+    const MSB = SSB / (n - 1);
+    const MSW = SSW / n;
+    if (MSB + MSW === 0) return 0;
+    return (MSB - MSW) / (MSB + MSW);
+  }
+
+  function fpc(nEff, pop){
+    if (nEff >= pop) return 0;
+    return Math.sqrt(Math.max(0, (pop - nEff) / (pop - 1)));
+  }
+
+  function fisherCI(r, nEff, z, pop){
+    const rc = Math.max(-0.999, Math.min(0.999, r));
+    const W = 0.5 * Math.log((1 + rc) / (1 - rc));
+    const seW = (1 / Math.sqrt(Math.max(1, nEff - 2))) * fpc(nEff, pop);
+    const wL = W - z * seW, wU = W + z * seW;
+    const rL = (Math.exp(2*wL) - 1) / (Math.exp(2*wL) + 1);
+    const rU = (Math.exp(2*wU) - 1) / (Math.exp(2*wU) + 1);
+    return [rL, rU];
+  }
+
+  function ciHalfWidthFromRho(rho, nEff, z, pop){
+    const W = 0.5 * Math.log((1 + rho) / (1 - rho));
+    const seW = (1 / Math.sqrt(Math.max(1, nEff - 2))) * fpc(nEff, pop);
+    const rL = (Math.exp(2*(W - z*seW)) - 1) / (Math.exp(2*(W - z*seW)) + 1);
+    const rU = (Math.exp(2*(W + z*seW)) - 1) / (Math.exp(2*(W + z*seW)) + 1);
+    return (rU - rL) / 2;
+  }
+
+  function bonettNResponses(rho, z, halfWidth, pop){
+    const num = 8 * z*z * (1-rho)*(1-rho) * (1+rho)*(1+rho);
+    const den = 2 * (2*halfWidth)*(2*halfWidth);
+    const n0 = 1 + num / den;
+    return Math.min(pop, n0 * pop / (pop + n0 - 1));
+  }
+
+  function readSetup(){
+    const participants = Math.max(2, Math.floor(parseFloat(pIn.value) || 1000));
+    const responses = Math.max(1, Math.floor(parseFloat(qIn.value) || 1));
+    const crit = Math.max(1, Math.floor(parseFloat(kIn.value) || 1));
+    const sMin = Math.floor(parseFloat(sMinIn.value));
+    const sMax = Math.floor(parseFloat(sMaxIn.value));
+    const total = participants * responses;
+    const scaleMin = Math.min(sMin, sMax - 1);
+    const scaleMax = Math.max(sMax, scaleMin + 1);
+    return { participants, responses, crit, total, scaleMin, scaleMax };
+  }
+
+  let histChart, curveChart;
+
+  function run(){
+    const setup = readSetup();
+    const { participants, responses, total } = setup;
+    const scaleMin = setup.scaleMin, scaleMax = setup.scaleMax;
+    const scaleMid = (scaleMin + scaleMax) / 2;
+    const scaleSD = (scaleMax - scaleMin) / 4;
+
+    // N slider bounds: participants
+    if (parseInt(nIn.max) !== participants) {
+      nIn.max = participants;
+      if (parseInt(nIn.value) > participants) nIn.value = participants;
+    }
+
+    const nParts = parseInt(nIn.value);
+    const nEff = nParts * responses;
+    const rho = parseFloat(rIn.value);
+    const confLevel = CONF[parseInt(cIn.value)];
+    const thr = parseFloat(tIn.value);
+    const joint = jointIn.checked;
+    const PAIRS = 3;
+    const m = joint ? PAIRS * setup.crit : 1;
+    const alpha = 1 - confLevel;
+    const alphaPer = alpha / m;
+    const z = qnorm(1 - alphaPer/2);
+    const perIccLevel = 1 - alphaPer;
+
+    nOut.textContent = nParts.toLocaleString();
+    rOut.textContent = rho.toFixed(2);
+    cOut.textContent = (confLevel*100).toFixed(0) + '%' + (joint ? ' joint' : '');
+    cLabel.textContent = joint ? 'Joint confidence level' : 'Confidence level';
+    tOut.textContent = thr.toFixed(2);
+    const nIccs = PAIRS * setup.crit;
+    const critLabel = setup.crit === 1 ? '1 criterion' : setup.crit + ' criteria';
+    if (joint) {
+      jointDetail.textContent = `${PAIRS} pairs × ${critLabel} = ${nIccs} ICCs · per-ICC level ≈ ${(perIccLevel*100).toFixed(2)}% (z = ${z.toFixed(2)})`;
+      jointDetail.classList.add('active');
+    } else {
+      jointDetail.textContent = `${PAIRS} pairs × ${critLabel} = ${nIccs} ICCs · Bonferroni when on`;
+      jointDetail.classList.remove('active');
+    }
+    totalOut.textContent = total.toLocaleString();
+    fracOut.textContent = ((nParts/participants)*100).toFixed(1) + '%';
+    respGradedOut.textContent = nEff.toLocaleString();
+    ratingsOut.textContent = (nEff * 2).toLocaleString();
+
+    // Adaptive simulation count based on effective N
+    const N_SIMS = Math.max(300, Math.min(1500, Math.floor(2_000_000 / Math.max(50, nEff))));
+
+    const sigmaA = Math.sqrt(rho);
+    const sigmaE = Math.sqrt(1 - rho);
+    const estimates = new Float64Array(N_SIMS);
+    let widthSum = 0, powerCount = 0;
+
+    function toScale(latent){
+      let v = Math.round(scaleMid + scaleSD * latent);
+      if (v < scaleMin) v = scaleMin;
+      if (v > scaleMax) v = scaleMax;
+      return v;
+    }
+
+    for (let s=0; s<N_SIMS; s++){
+      const data = new Array(nEff);
+      for (let i=0;i<nEff;i++){
+        const a = sigmaA * gaussian();
+        data[i] = [
+          toScale(a + sigmaE*gaussian()),
+          toScale(a + sigmaE*gaussian())
+        ];
+      }
+      const r = iccOneWay(data);
+      estimates[s] = r;
+      const [rL, rU] = fisherCI(r, nEff, z, total);
+      widthSum += (rU - rL);
+      if (rL > thr) powerCount++;
+    }
+
+    const sorted = Array.from(estimates).sort((a,b)=>a-b);
+    const mean = sorted.reduce((a,b)=>a+b,0) / N_SIMS;
+    const p025 = sorted[Math.floor(0.025*N_SIMS)];
+    const p975 = sorted[Math.floor(0.975*N_SIMS)];
+    const meanHW = (widthSum / N_SIMS) / 2;
+    const power = powerCount / N_SIMS;
+
+    // Required participants for ±0.10 precision
+    const needResponses = bonettNResponses(rho, z, 0.10, total);
+    const needParts = Math.min(participants, Math.ceil(needResponses / responses));
+
+    $('mMean').textContent = mean.toFixed(3);
+    $('mInt').textContent = `empirical 95%: [${p025.toFixed(2)}, ${p975.toFixed(2)}]`;
+    $('mHW').textContent = '± ' + meanHW.toFixed(3);
+    $('mPow').textContent = (power*100).toFixed(0) + '%';
+    $('mPowSub').textContent = `at ρ₀ = ${thr.toFixed(2)}`;
+    $('mNeed').textContent = needParts.toLocaleString();
+
+    // Histogram
+    const lo = Math.max(-0.2, Math.min(p025, rho - 0.4) - 0.05);
+    const hi = Math.min(1.05, Math.max(p975, rho + 0.4) + 0.05);
+    const bins = 36;
+    const w = (hi - lo) / bins;
+    const counts = new Array(bins).fill(0);
+    const labels = new Array(bins);
+    for (let b=0;b<bins;b++) labels[b] = (lo + (b+0.5)*w);
+    for (let s=0;s<N_SIMS;s++){
+      const idx = Math.min(bins-1, Math.max(0, Math.floor((estimates[s] - lo)/w)));
+      counts[idx]++;
+    }
+
+    if (histChart) histChart.destroy();
+    histChart = new Chart($('histChart'), {
+      type: 'bar',
+      data: {
+        labels: labels.map(v => v.toFixed(2)),
+        datasets: [{
+          data: counts, backgroundColor: COL.bar, borderWidth: 0,
+          barPercentage: 1.0, categoryPercentage: 1.0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: COL.ink,
+            titleFont: { family: FONT, size: 12 },
+            bodyFont: { family: FONT, size: 12 },
+            callbacks: {
+              title: (items) => 'ICC ≈ ' + items[0].label,
+              label: (item) => item.parsed.y + ' samples'
+            }
+          },
+          annotation: {
+            annotations: {
+              trueLine: {
+                type: 'line',
+                xMin: ((rho - lo) / w) - 0.5,
+                xMax: ((rho - lo) / w) - 0.5,
+                borderColor: COL.warn, borderWidth: 1.5, borderDash: [4,3],
+                label: {
+                  display: true, content: 'true ρ = ' + rho.toFixed(2),
+                  position: 'start', backgroundColor: 'transparent',
+                  color: COL.warn,
+                  font: { family: FONT, size: 11, weight: '500' },
+                  yAdjust: -4
+                }
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { autoSkip: true, maxTicksLimit: 8, font: {size: 11} },
+            grid: { display: false }, border: { color: COL.rule },
+            title: { display: true, text: 'ICC estimate', font: {size: 12}, color: COL.ink3 }
+          },
+          y: {
+            ticks: { font: {size: 11} },
+            grid: { color: 'rgba(128,125,114,0.15)' },
+            border: { display: false },
+            title: { display: true, text: 'simulated samples', font: {size: 12}, color: COL.ink3 }
+          }
+        }
+      }
+    });
+
+    // Precision curve: x-axis is participants
+    const ns = [], hws = [];
+    const nMaxCurve = Math.min(participants, Math.max(100, nParts + 50));
+    const step = Math.max(1, Math.round(nMaxCurve / 80));
+    for (let nn=Math.max(2, step); nn<=nMaxCurve; nn+=step){
+      ns.push(nn);
+      hws.push(ciHalfWidthFromRho(rho, nn * responses, z, total));
+    }
+    const currentHW = ciHalfWidthFromRho(rho, nEff, z, total);
+    const nIdx = ns.findIndex(v => v >= nParts);
+
+    if (curveChart) curveChart.destroy();
+    curveChart = new Chart($('curveChart'), {
+      type: 'line',
+      data: {
+        labels: ns,
+        datasets: [{
+          label: 'CI half-width', data: hws,
+          borderColor: COL.accent, backgroundColor: COL.accentS,
+          borderWidth: 2, pointRadius: 0, tension: 0.25, fill: true
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: COL.ink,
+            titleFont: { family: FONT, size: 12 },
+            bodyFont: { family: FONT, size: 12 },
+            callbacks: {
+              title: (items) => 'N = ' + items[0].label + ' participants',
+              label: (item) => '± ' + item.parsed.y.toFixed(3)
+            }
+          },
+          annotation: {
+            annotations: {
+              nLine: {
+                type: 'line', xMin: nIdx, xMax: nIdx,
+                borderColor: COL.warn, borderWidth: 1.2, borderDash: [4,3]
+              },
+              nPoint: {
+                type: 'point', xValue: nIdx, yValue: currentHW,
+                radius: 5, backgroundColor: COL.warn, borderColor: COL.warn, borderWidth: 0
+              },
+              nLabel: {
+                type: 'label', xValue: nIdx, yValue: currentHW,
+                content: ['N = ' + nParts.toLocaleString(), '± ' + currentHW.toFixed(3)],
+                color: COL.warn,
+                font: { family: FONT, size: 11, weight: '500' },
+                backgroundColor: 'rgba(246,242,233,0.92)', padding: 6,
+                yAdjust: -28,
+                xAdjust: nIdx > ns.length * 0.65 ? -44 : 44
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { autoSkip: true, maxTicksLimit: 10, font: {size: 11} },
+            grid: { display: false }, border: { color: COL.rule },
+            title: { display: true, text: 'N (participants)', font: {size: 12}, color: COL.ink3 }
+          },
+          y: {
+            ticks: { font: {size: 11}, callback: (v) => '± ' + v.toFixed(2) },
+            grid: { color: 'rgba(128,125,114,0.15)' },
+            border: { display: false },
+            title: { display: true, text: 'CI half-width', font: {size: 12}, color: COL.ink3 },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  let timer = null;
+  function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
+  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn].forEach(el => {
+    el.addEventListener('input', debounced);
+    el.addEventListener('change', debounced);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script>
+</body>
+</html>
