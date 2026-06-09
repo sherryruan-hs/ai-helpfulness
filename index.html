@@ -35,9 +35,9 @@
     font-family: var(--sans); font-size: 15px; line-height: 1.55;
     -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   }
-  .page { max-width: 1280px; margin: 0 auto; padding: 56px 32px 72px; }
+  .page { max-width: 1280px; margin: 0 auto; padding: 44px 24px 56px; }
 
-  header { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 36px; }
+  header { border-bottom: 1px solid var(--rule); padding-bottom: 22px; margin-bottom: 28px; }
   .eyebrow {
     font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px;
@@ -54,11 +54,11 @@
 
   .layout {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 48px;
+    grid-template-columns: 1fr 300px;
+    gap: 32px;
     align-items: start;
   }
-  .main-col > section { margin-bottom: 44px; }
+  .main-col > section { margin-bottom: 32px; }
   .main-col > section:last-child { margin-bottom: 0; }
 
   h2 {
@@ -66,23 +66,23 @@
     margin: 0 0 4px; letter-spacing: -0.01em;
   }
   h2 em { font-style: italic; color: var(--accent); }
-  .section-note { font-size: 13px; color: var(--ink-3); margin: 0 0 20px; }
+  .section-note { font-size: 13px; color: var(--ink-3); margin: 0 0 14px; }
 
   .setup, .controls {
-    padding: 24px 28px;
+    padding: 18px 22px;
     background: var(--bg-card);
     border: 1px solid var(--rule);
     border-radius: 4px;
   }
   .setup-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 22px 32px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 20px;
   }
   .controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 22px 32px;
+    gap: 18px 24px;
   }
   .ctrl-row { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .ctrl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
@@ -94,11 +94,11 @@
   }
 
   .setup-summary, .sampling-summary {
-    margin-top: 22px;
-    padding-top: 18px;
+    margin-top: 16px;
+    padding-top: 14px;
     border-top: 1px dashed var(--rule);
     display: flex;
-    gap: 28px 36px;
+    gap: 24px 32px;
     flex-wrap: wrap;
     font-family: var(--mono);
     font-size: 12.5px;
@@ -110,7 +110,7 @@
     color: var(--ink); margin-right: 4px; font-feature-settings: "tnum";
   }
   .sampling-summary {
-    margin: 14px 0 0; padding: 16px 28px 0; border-top: none;
+    margin: 12px 0 0; padding: 12px 22px 0; border-top: none;
   }
   .sampling-summary strong.accent { color: var(--accent); }
 
@@ -154,32 +154,32 @@
     background: var(--rule); border: 1px solid var(--rule);
     border-radius: 4px; overflow: hidden;
   }
-  .metric { background: var(--bg-card); padding: 18px 20px 20px; min-height: 110px; }
+  .metric { background: var(--bg-card); padding: 14px 16px 16px; min-height: 96px; }
   .metric-label {
     font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px;
   }
   .metric-val {
-    font-family: var(--serif); font-size: 32px; line-height: 1;
+    font-family: var(--serif); font-size: 28px; line-height: 1;
     font-weight: 500; font-feature-settings: "tnum", "lnum"; color: var(--ink);
   }
   .metric-val.accent { color: var(--accent); }
   .metric-sub {
     font-family: var(--mono); font-size: 11px; color: var(--ink-3);
-    margin-top: 8px; font-feature-settings: "tnum";
+    margin-top: 6px; font-feature-settings: "tnum";
   }
 
   .chart-card {
     background: var(--bg-card); border: 1px solid var(--rule);
-    border-radius: 4px; padding: 22px 26px 26px;
+    border-radius: 4px; padding: 18px 22px 22px;
   }
-  .chart-card + .chart-card { margin-top: 20px; }
+  .chart-card + .chart-card { margin-top: 16px; }
   .chart-title { font-family: var(--serif); font-size: 16px; font-weight: 500; margin: 0; }
   .chart-sub {
-    font-size: 12px; color: var(--ink-3); margin: 2px 0 16px;
+    font-size: 12px; color: var(--ink-3); margin: 2px 0 12px;
     font-family: var(--mono); letter-spacing: 0.02em;
   }
-  .chart-wrap { position: relative; width: 100%; height: 240px; }
+  .chart-wrap { position: relative; width: 100%; height: 210px; }
 
   .toggle-row {
     display: flex; align-items: center; gap: 14px;
@@ -277,21 +277,21 @@
   .calib-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 22px 32px;
-    margin-bottom: 24px;
+    gap: 16px 24px;
+    margin-bottom: 18px;
   }
   .prob-bar-wrap {
-    padding-top: 20px;
+    padding-top: 16px;
     border-top: 1px dashed var(--rule);
   }
   .prob-bar {
     display: flex;
-    height: 32px;
+    height: 28px;
     background: var(--bg);
     border: 1px solid var(--rule-2);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   .prob-seg {
     display: flex; align-items: center; justify-content: center;
@@ -399,8 +399,8 @@
   .notes-panel {
     background: transparent;
     border-left: 1px solid var(--rule);
-    padding: 4px 0 4px 32px;
-    font-size: 13.5px; line-height: 1.6;
+    padding: 4px 0 4px 24px;
+    font-size: 13px; line-height: 1.55;
     color: var(--ink-2);
   }
   .notes-panel-eyebrow {
@@ -435,19 +435,19 @@
   }
   footer a { color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--ink-3); }
 
-  @media (max-width: 1080px) {
-    .layout { grid-template-columns: 1fr; gap: 36px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 28px; }
     .side-col { position: static; }
     .right-stack { max-height: none; overflow: visible; }
-    .notes-panel { border-left: none; border-top: 1px solid var(--rule); padding: 24px 0 0; }
+    .notes-panel { border-left: none; border-top: 1px solid var(--rule); padding: 20px 0 0; }
   }
-  @media (max-width: 720px) {
-    .page { padding: 36px 20px 56px; }
-    h1 { font-size: 32px; }
-    .controls, .setup-grid, .calib-grid { grid-template-columns: 1fr; gap: 18px; }
-    .controls, .setup { padding: 20px; }
+  @media (max-width: 640px) {
+    .page { padding: 28px 16px 44px; }
+    h1 { font-size: 30px; }
+    .controls, .setup-grid, .calib-grid { grid-template-columns: 1fr; gap: 16px; }
+    .controls, .setup { padding: 18px; }
     .metrics { grid-template-columns: repeat(2, 1fr); }
-    .metric { min-height: 96px; }
+    .metric { min-height: 84px; }
   }
 </style>
 </head>
@@ -465,8 +465,8 @@
     <div class="main-col">
 
       <section>
-        <h2>Study setup</h2>
-        <p class="section-note">The pool you're sampling from. Each output is rated on each dimension on a fixed integer scale.</p>
+        <h2>Study setup &amp; assumption</h2>
+        <p class="section-note">The pool you're sampling from, plus your expectation of inter-rater agreement (used by both calibration and main-grading calculations below).</p>
 
         <div class="setup">
           <div class="setup-grid">
@@ -499,38 +499,43 @@
                 <input type="number" id="sMaxIn" min="2" max="100" step="1" value="10" />
               </div>
             </div>
+            <div class="ctrl-row">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="minPerOutIn">Min / output / rater</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About minutes per rating session">i<span class="info-content" role="tooltip">
+                    <strong>Time per rating session</strong>
+                    <p>Minutes one rater spends on one output — reading sources, reading the memo, and scoring all dimensions. Used only to estimate total grading hours below.</p>
+                    <p>The proposal estimates 12 minutes per output.</p>
+                  </span></span>
+                </span>
+              </div>
+              <input type="number" id="minPerOutIn" min="1" max="120" step="1" value="12" />
+            </div>
+            <div class="ctrl-row rho-inline">
+              <div class="ctrl-head">
+                <span class="label-block">
+                  <label class="ctrl-label" for="rIn">Assumed <span class="sym">ρ</span></label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About true ICC">i<span class="info-content" role="tooltip">
+                    <strong>True ICC (ρ)</strong>
+                    <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — used for planning both calibration and main grading.</p>
+                    <span class="bands">
+                      <span>&lt; 0.50</span><span>poor agreement</span>
+                      <span>0.50–0.75</span><span>moderate</span>
+                      <span>0.75–0.90</span><span>good</span>
+                      <span>&gt; 0.90</span><span>excellent</span>
+                    </span>
+                    <span class="cite">Bands from Koo &amp; Li (2016)</span>
+                  </span></span>
+                </span>
+                <span class="ctrl-val" id="rOut">0.75</span>
+              </div>
+              <input type="range" id="rIn" min="0" max="0.95" step="0.01" value="0.75" />
+            </div>
           </div>
 
           <div class="setup-summary">
             <span><strong id="totalOut">5,000</strong> total outputs in pool</span>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <h2>Planning assumption</h2>
-        <p class="section-note">Your expectation of inter-rater agreement — used by both calibration and main-grading calculations below.</p>
-
-        <div class="setup">
-          <div class="ctrl-row">
-            <div class="ctrl-head">
-              <span class="label-block">
-                <label class="ctrl-label" for="rIn">Assumed true ICC <span class="sym">ρ</span></label>
-                <span class="info-tip" tabindex="0" role="button" aria-label="About true ICC">i<span class="info-content" role="tooltip">
-                  <strong>True ICC (ρ)</strong>
-                  <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — used for planning both calibration and main grading.</p>
-                  <span class="bands">
-                    <span>&lt; 0.50</span><span>poor agreement</span>
-                    <span>0.50–0.75</span><span>moderate</span>
-                    <span>0.75–0.90</span><span>good</span>
-                    <span>&gt; 0.90</span><span>excellent</span>
-                  </span>
-                  <span class="cite">Bands from Koo &amp; Li (2016)</span>
-                </span></span>
-              </span>
-              <span class="ctrl-val" id="rOut">0.75</span>
-            </div>
-            <input type="range" id="rIn" min="0" max="0.95" step="0.01" value="0.75" />
           </div>
         </div>
       </section>
@@ -644,11 +649,18 @@
 
           <div class="ctrl-row">
             <div class="ctrl-head">
-              <label class="ctrl-label">Rating effort</label>
+              <span class="label-block">
+                <label class="ctrl-label">Rating effort</label>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About rating effort">i<span class="info-content" role="tooltip">
+                  <strong>Rating effort</strong>
+                  <p>Each output is rated once per human, so M outputs × 2 raters gives the total session count.</p>
+                  <p>Multiplied by the minutes-per-session figure from study setup (default 12), this gives the total rating hours, split evenly between the two raters.</p>
+                </span></span>
+              </span>
               <span class="ctrl-val" id="ratingsOut">—</span>
             </div>
-            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3); padding-top: 4px;">
-              <span><strong class="accent" id="fracOut">—</strong> sampling fraction · M × 2 sessions ≈ <span id="hoursEst">—</span></span>
+            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3); padding-top: 4px; line-height: 1.5;">
+              <strong class="accent" id="fracOut">—</strong> of pool: <span id="hoursEst">—</span>
             </div>
           </div>
 
@@ -755,7 +767,7 @@
           <p>The calibration check uses the <em>point estimate</em>: pass if observed r ≥ 0.70, relaxed band if 0.65 ≤ r &lt; 0.70. The "Power vs ρ₀" metric is more conservative — it uses the <em>CI lower bound</em>: pass if the lower bound exceeds ρ₀. Both derive from the same Fisher-z sampling distribution but answer different questions.</p>
 
           <h3>How the recommendations are derived</h3>
-          <p><strong style="color: var(--ink); font-style: normal;">k</strong> is the smallest size giving ≥ 90% probability of strict pass at the assumed ρ. If ρ ≤ strict threshold, calibration cannot reliably pass and the recommendation flags the underlying issue.</p>
+          <p><strong style="color: var(--ink); font-style: normal;">k</strong> is the smallest size giving ≥ 80% probability of strict pass at the assumed ρ. If ρ ≤ strict threshold, calibration cannot reliably pass and the recommendation flags the underlying issue.</p>
           <p><strong style="color: var(--ink); font-style: normal;">M</strong> is the larger of (a) Bonett's N for ±0.10 CI half-width and (b) the N for ≥ 80% power that the CI lower bound exceeds ρ₀. The binding criterion is noted.</p>
 
           <h3>Data-generating model</h3>
@@ -787,7 +799,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
 <script>
 (function(){
   const CONF = {0: 0.90, 1: 0.95, 2: 0.99};
@@ -801,7 +812,99 @@
   const FONT = "'Hanken Grotesk', system-ui, sans-serif";
   Chart.defaults.font.family = FONT;
   Chart.defaults.color = COL.ink3;
-  if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+
+  // Custom annotation plugin — draws vertical reference lines and marked points
+  // on top of the chart, with category-scale interpolation for histograms.
+  const xrefPlugin = {
+    id: 'xrefAnnotation',
+    afterDatasetsDraw(chart) {
+      const opts = chart.config.options.plugins && chart.config.options.plugins.xrefAnnotation;
+      if (!opts) return;
+      const { ctx, chartArea, scales } = chart;
+      const xScale = scales.x;
+
+      function getPixelX(value){
+        if (xScale.type === 'category'){
+          const labels = chart.data.labels || [];
+          const n = labels.length;
+          const lower = Math.floor(value);
+          const upper = lower + 1;
+          const frac = value - lower;
+          if (lower < 0) return xScale.getPixelForValue(0);
+          if (upper >= n) return xScale.getPixelForValue(n - 1);
+          const pxLower = xScale.getPixelForValue(lower);
+          const pxUpper = xScale.getPixelForValue(upper);
+          return pxLower + (pxUpper - pxLower) * frac;
+        }
+        return xScale.getPixelForValue(value);
+      }
+
+      ctx.save();
+
+      if (opts.lines){
+        opts.lines.forEach(line => {
+          const x = getPixelX(line.x);
+          if (x < chartArea.left - 5 || x > chartArea.right + 5) return;
+          ctx.beginPath();
+          ctx.strokeStyle = line.color;
+          ctx.lineWidth = line.width || 1.5;
+          ctx.setLineDash(line.dash || [4, 3]);
+          ctx.moveTo(x, chartArea.top);
+          ctx.lineTo(x, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          if (line.label){
+            ctx.fillStyle = line.color;
+            ctx.font = `500 11px ${FONT}`;
+            ctx.textBaseline = 'top';
+            ctx.fillText(line.label, x + 4, chartArea.top + 2);
+          }
+        });
+      }
+
+      if (opts.points){
+        opts.points.forEach(p => {
+          const x = getPixelX(p.x);
+          const y = scales.y.getPixelForValue(p.y);
+
+          ctx.beginPath();
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([4, 3]);
+          ctx.moveTo(x, chartArea.top);
+          ctx.lineTo(x, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.beginPath();
+          ctx.arc(x, y, p.radius || 5, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+
+          if (p.labels){
+            ctx.font = `500 11px ${FONT}`;
+            ctx.textBaseline = 'top';
+            const lineHeight = 14;
+            const padding = 6;
+            const widths = p.labels.map(l => ctx.measureText(l).width);
+            const boxW = Math.max(...widths) + padding * 2;
+            const boxH = p.labels.length * lineHeight + padding * 2 - 2;
+            const labelX = x + (p.xAdjust || 44) - boxW / 2;
+            const labelY = y + (p.yAdjust || -boxH - 8);
+            ctx.fillStyle = 'rgba(246,242,233,0.94)';
+            ctx.fillRect(labelX, labelY, boxW, boxH);
+            ctx.fillStyle = p.color;
+            p.labels.forEach((label, i) => {
+              ctx.fillText(label, labelX + padding, labelY + padding + lineHeight * i);
+            });
+          }
+        });
+      }
+
+      ctx.restore();
+    }
+  };
+  Chart.register(xrefPlugin);
 
   function qnorm(p){
     const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
@@ -841,7 +944,7 @@
 
   const $ = (id) => document.getElementById(id);
   const nIn = $('nIn'), rIn = $('rIn'), cIn = $('cIn'), tIn = $('tIn');
-  const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn');
+  const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn'), minPerOutIn = $('minPerOutIn');
   const jointIn = $('jointIn');
   const kCalIn = $('kCalIn'), rhoStrictIn = $('rhoStrictIn'), rhoRelaxIn = $('rhoRelaxIn');
   const nOut = $('nOut'), rOut = $('rOut'), cOut = $('cOut'), tOut = $('tOut');
@@ -1016,8 +1119,10 @@
     fracOut.textContent = ((M/total)*100).toFixed(1) + '%';
     const sessions = M * 2;
     ratingsOut.textContent = sessions.toLocaleString() + ' sessions';
-    const hours = (sessions * 12) / 60;
-    hoursEst.textContent = hours < 100 ? hours.toFixed(0) + ' hours' : (hours/8).toFixed(0) + ' rater-days';
+    const minPerOutput = Math.max(1, parseFloat(minPerOutIn.value) || 12);
+    const totalHours = (sessions * minPerOutput) / 60;
+    const perRater = totalHours / 2;
+    hoursEst.textContent = Math.round(totalHours).toLocaleString() + ' hours total (' + Math.round(perRater).toLocaleString() + ' per rater)';
 
     // Calibration outcomes at current k
     const cp = calibProbs(kCal, rho, rhoStrict, rhoRelax, total);
@@ -1034,10 +1139,10 @@
 
     // --- Recommendations ---
     // k recommendation
-    const kRec = kForStrictPass(rho, rhoStrict, total, 0.90);
+    const kRec = kForStrictPass(rho, rhoStrict, total, 0.80);
     if (kRec !== null) {
       recK.textContent = kRec.toLocaleString();
-      recKNote.innerHTML = `Gets you to <em>≥ 90% chance of strict pass</em> at ρ = ${rho.toFixed(2)}. The proposal's pre-registered k = 50 gives ${pct(cp.strict)} strict pass.`;
+      recKNote.innerHTML = `Gets you to <em>≥ 80% chance of strict pass</em> at ρ = ${rho.toFixed(2)}. Your current k = ${kCal.toLocaleString()} gives ${pct(cp.strict)} strict pass.`;
       applyK.classList.remove('disabled');
       applyK.dataset.value = kRec;
     } else {
@@ -1045,7 +1150,7 @@
       if (rho <= rhoRelax) {
         recKNote.innerHTML = `<span class="warn">Calibration likely to fail</span> at ρ = ${rho.toFixed(2)} (below relaxed threshold ${rhoRelax.toFixed(2)}). No k can fix this — rubric or raters need re-training first.`;
       } else {
-        recKNote.innerHTML = `<span class="warn">Strict pass unreliable</span> at ρ = ${rho.toFixed(2)} (at or below strict threshold ${rhoStrict.toFixed(2)}). At best, k = 50 gives ${pct(cp.strict)} strict pass; relaxed band would dominate.`;
+        recKNote.innerHTML = `<span class="warn">Strict pass unreliable</span> at ρ = ${rho.toFixed(2)} (at or below strict threshold ${rhoStrict.toFixed(2)}). At your current k = ${kCal.toLocaleString()}, strict pass is ${pct(cp.strict)}; the relaxed band dominates regardless of k.`;
       }
       applyK.classList.add('disabled');
       delete applyK.dataset.value;
@@ -1154,22 +1259,15 @@
               label: (item) => item.parsed.y + ' samples'
             }
           },
-          annotation: {
-            annotations: {
-              trueLine: {
-                type: 'line',
-                xMin: ((rho - lo) / w) - 0.5,
-                xMax: ((rho - lo) / w) - 0.5,
-                borderColor: COL.warn, borderWidth: 1.5, borderDash: [4,3],
-                label: {
-                  display: true, content: 'true ρ = ' + rho.toFixed(2),
-                  position: 'start', backgroundColor: 'transparent',
-                  color: COL.warn,
-                  font: { family: FONT, size: 11, weight: '500' },
-                  yAdjust: -4
-                }
-              }
-            }
+          annotation: undefined,
+          xrefAnnotation: {
+            lines: [{
+              x: ((rho - lo) / w) - 0.5,
+              color: COL.warn,
+              label: 'true ρ = ' + rho.toFixed(2),
+              width: 1.5,
+              dash: [4, 3]
+            }]
           }
         },
         scales: {
@@ -1222,33 +1320,24 @@
               label: (item) => '± ' + item.parsed.y.toFixed(3)
             }
           },
-          annotation: {
-            annotations: {
-              nLine: {
-                type: 'line', xMin: nIdx, xMax: nIdx,
-                borderColor: COL.warn, borderWidth: 1.2, borderDash: [4,3]
-              },
-              nPoint: {
-                type: 'point', xValue: nIdx, yValue: currentHW,
-                radius: 5, backgroundColor: COL.warn, borderColor: COL.warn, borderWidth: 0
-              },
-              nLabel: {
-                type: 'label', xValue: nIdx, yValue: currentHW,
-                content: ['M = ' + M.toLocaleString(), '± ' + currentHW.toFixed(3)],
-                color: COL.warn,
-                font: { family: FONT, size: 11, weight: '500' },
-                backgroundColor: 'rgba(246,242,233,0.92)', padding: 6,
-                yAdjust: -28,
-                xAdjust: nIdx > ns.length * 0.65 ? -44 : 44
-              }
-            }
+          annotation: undefined,
+          xrefAnnotation: {
+            points: [{
+              x: nIdx,
+              y: currentHW,
+              color: COL.warn,
+              radius: 5,
+              labels: ['M = ' + M.toLocaleString(), '± ' + currentHW.toFixed(3)],
+              xAdjust: nIdx > ns.length * 0.65 ? -44 : 44,
+              yAdjust: -32
+            }]
           }
         },
         scales: {
           x: {
             ticks: { autoSkip: true, maxTicksLimit: 10, font: {size: 11} },
             grid: { display: false }, border: { color: COL.rule },
-            title: { display: true, text: 'M (outputs)', font: {size: 12}, color: COL.ink3 }
+            title: { display: true, text: 'M (sample size)', font: {size: 12}, color: COL.ink3 }
           },
           y: {
             ticks: { font: {size: 11}, callback: (v) => '± ' + v.toFixed(2) },
@@ -1281,7 +1370,7 @@
 
   let timer = null;
   function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
-  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn].forEach(el => {
+  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn, minPerOutIn].forEach(el => {
     el.addEventListener('input', debounced);
     el.addEventListener('change', debounced);
   });
