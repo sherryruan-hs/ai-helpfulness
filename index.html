@@ -1234,7 +1234,6 @@
     const rhoObs = rhoObsValid ? Math.max(0, Math.min(0.999, parseFloat(rhoObsRaw))) : null;
 
     // Basis toggle: which ρ value drives M recommendation
-    const basisBtns = document.querySelectorAll('.basis-btn');
     const observedBtn = document.querySelector('.basis-btn[data-basis="observed"]');
     const assumedBtn = document.querySelector('.basis-btn[data-basis="assumed"]');
     const hasObserved = rhoObs !== null;
@@ -1315,7 +1314,9 @@
     const p975 = sorted[Math.floor(0.975*N_SIMS)];
     const meanHW = (widthSum / N_SIMS) / 2;
     const power = powerCount / N_SIMS;
-    const needM = bonettN(rho, z, 0.10, total);
+    // Use the same basis (assumed ρ or observed ICC) as the M recommendation so the
+    // two ±0.10-precision figures always agree.
+    const needM = bonettN(rhoForM, z, 0.10, total);
 
     $('mMean').textContent = mean.toFixed(3);
     $('mInt').textContent = `empirical 95%: [${p025.toFixed(2)}, ${p975.toFixed(2)}]`;
