@@ -398,6 +398,38 @@
     color: var(--ink-3); cursor: not-allowed; opacity: 0.5;
   }
   .rec-apply.disabled:hover { background: transparent; }
+
+  .rec-basis-toggle {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--rule-2);
+    border-radius: 12px;
+    padding: 2px;
+    margin-bottom: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+  .basis-btn {
+    background: transparent;
+    border: none;
+    color: var(--ink-3);
+    padding: 3px 9px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .basis-btn:hover:not(:disabled):not(.active) {
+    color: var(--ink);
+  }
+  .basis-btn.active {
+    background: var(--accent);
+    color: var(--bg-card);
+  }
+  .basis-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
   .rec-value {
     line-height: 1; margin-bottom: 8px;
   }
@@ -784,6 +816,10 @@
             <div class="rec-head">
               <span class="rec-name">Main sample M</span>
               <button class="rec-apply" id="applyM" data-target="nIn">apply →</button>
+            </div>
+            <div class="rec-basis-toggle" id="basisToggle">
+              <button class="basis-btn active" data-basis="assumed">assumed ρ</button>
+              <button class="basis-btn" data-basis="observed">observed ICC</button>
             </div>
             <div class="rec-value">
               <strong id="recM">—</strong><span class="rec-value-suffix">outputs</span>
@@ -1196,11 +1232,23 @@
     const rhoObsRaw = (rhoObsIn.value || '').trim();
     const rhoObsValid = rhoObsRaw !== '' && !isNaN(parseFloat(rhoObsRaw));
     const rhoObs = rhoObsValid ? Math.max(0, Math.min(0.999, parseFloat(rhoObsRaw))) : null;
-    const rhoForM = rhoObs !== null ? rhoObs : rho;
 
-    if (rhoObs !== null){
+    // Basis toggle: which ρ value drives M recommendation
+    const basisBtns = document.querySelectorAll('.basis-btn');
+    const observedBtn = document.querySelector('.basis-btn[data-basis="observed"]');
+    const assumedBtn = document.querySelector('.basis-btn[data-basis="assumed"]');
+    const hasObserved = rhoObs !== null;
+    observedBtn.disabled = !hasObserved;
+    if (!hasObserved && rhoBasis === 'observed') rhoBasis = 'assumed';
+    assumedBtn.classList.toggle('active', rhoBasis === 'assumed');
+    observedBtn.classList.toggle('active', rhoBasis === 'observed' && hasObserved);
+
+    const useObserved = rhoBasis === 'observed' && hasObserved;
+    const rhoForM = useObserved ? rhoObs : rho;
+
+    if (hasObserved){
       const [obsL, obsU] = fisherCI(rhoObs, kCal, 1.96, total);
-      rhoObsCIOut.textContent = `→ 95% CI [${obsL.toFixed(2)}, ${obsU.toFixed(2)}] · drives M recommendation`;
+      rhoObsCIOut.textContent = `→ 95% CI [${obsL.toFixed(2)}, ${obsU.toFixed(2)}]`;
     } else {
       rhoObsCIOut.textContent = '';
     }
@@ -1217,7 +1265,7 @@
       binding = 'precision';
     }
     recM.textContent = mRec.toLocaleString();
-    const basis = rhoObs !== null
+    const basis = useObserved
       ? `Based on <em>observed ICC = ${rhoObs.toFixed(2)}</em> at k = ${kCal.toLocaleString()}. `
       : '';
     if (binding === 'power') {
@@ -1225,7 +1273,7 @@
     } else if (mPower !== null) {
       recMNote.innerHTML = `${basis}Reaches <em>±0.10 CI half-width</em>. 80% power vs ρ₀ already met at M = ${mPower.toLocaleString()}.`;
     } else {
-      recMNote.innerHTML = `${basis}Reaches <em>±0.10 CI half-width</em>. <span class="warn">Power target unreachable</span>: ρ = ${rhoForM.toFixed(2)} is at or below ρ₀ = ${thr.toFixed(2)}.`;
+      recMNote.innerHTML = `${basis}<span class="warn">Power target unreachable</span> — assumed ρ (${rhoForM.toFixed(2)}) is at or below ρ₀ (${thr.toFixed(2)}), so no M can lift the CI lower bound above ρ₀. The figure above reaches the <em>precision target (±0.10) only</em>; raise ρ or lower ρ₀ to fix this.`;
     }
     applyM.classList.remove('disabled');
     applyM.dataset.value = mRec;
@@ -1419,6 +1467,16 @@
   }
   setupApply(applyK);
   setupApply(applyM);
+
+  // Basis toggle state (which ρ value drives M recommendation)
+  let rhoBasis = 'assumed';
+  document.querySelectorAll('.basis-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      rhoBasis = btn.dataset.basis;
+      run();
+    });
+  });
 
   let timer = null;
   function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
