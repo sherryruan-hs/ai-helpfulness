@@ -770,7 +770,7 @@
           <div class="metric">
             <div class="metric-label">M for ± 0.10 precision</div>
             <div class="metric-val" id="mNeed">—</div>
-            <div class="metric-sub">outputs, FPC-adjusted</div>
+            <div class="metric-sub" id="mNeedSub">outputs, FPC-adjusted</div>
           </div>
         </div>
       </section>
@@ -1324,6 +1324,7 @@
     $('mPow').textContent = (power*100).toFixed(0) + '%';
     $('mPowSub').textContent = `at ρ₀ = ${thr.toFixed(2)}`;
     $('mNeed').textContent = needM.toLocaleString();
+    $('mNeedSub').textContent = useObserved ? 'outputs · basis: observed ICC' : 'outputs, FPC-adjusted';
 
     const lo = Math.max(-0.2, Math.min(p025, rho - 0.4) - 0.05);
     const hi = Math.min(1.05, Math.max(p975, rho + 0.4) + 0.05);
