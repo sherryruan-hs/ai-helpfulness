@@ -558,15 +558,15 @@
             <div class="ctrl-row">
               <div class="ctrl-head">
                 <span class="label-block">
-                  <label class="ctrl-label" for="minPerOutIn">Min / output / rater</label>
-                  <span class="info-tip" tabindex="0" role="button" aria-label="About minutes per rating session">i<span class="info-content" role="tooltip">
-                    <strong>Time per rating session</strong>
-                    <p>Minutes one rater spends on one output — reading sources, reading the memo, and scoring all dimensions. Used only to estimate total grading hours below.</p>
-                    <p>The proposal estimates 12 minutes per output.</p>
+                  <label class="ctrl-label" for="costPerOutIn">$ / output (2 raters)</label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About cost per output">i<span class="info-content" role="tooltip">
+                    <strong>Cost per output</strong>
+                    <p>Dollar cost to have one output graded by <em>both</em> human raters. Used only to estimate the total grading budget below.</p>
+                    <p>The proposal estimates $12 per output.</p>
                   </span></span>
                 </span>
               </div>
-              <input type="number" id="minPerOutIn" min="1" max="120" step="1" value="12" />
+              <input type="number" id="costPerOutIn" min="1" max="1000" step="1" value="12" />
             </div>
             <div class="ctrl-row rho-inline">
               <div class="ctrl-head">
@@ -721,9 +721,9 @@
               <span class="label-block">
                 <label class="ctrl-label">Rating effort</label>
                 <span class="info-tip" tabindex="0" role="button" aria-label="About rating effort">i<span class="info-content" role="tooltip">
-                  <strong>Rating effort</strong>
-                  <p>Each output is rated once per human, so M outputs × 2 raters gives the total session count.</p>
-                  <p>Multiplied by the minutes-per-session figure from study setup (default 12), this gives the total rating hours, split evenly between the two raters.</p>
+                  <strong>Rating effort &amp; cost</strong>
+                  <p>Each output is rated once by each human, so M outputs × 2 raters gives the total session count.</p>
+                  <p>Total budget = M × the per-output cost from study setup (default $12 per output, covering both raters).</p>
                 </span></span>
               </span>
               <span class="ctrl-val" id="ratingsOut">—</span>
@@ -1051,7 +1051,7 @@
 
   const $ = (id) => document.getElementById(id);
   const nIn = $('nIn'), rIn = $('rIn'), cIn = $('cIn'), tIn = $('tIn');
-  const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn'), minPerOutIn = $('minPerOutIn');
+  const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn'), costPerOutIn = $('costPerOutIn');
   const jointIn = $('jointIn');
   const kCalIn = $('kCalIn'), rhoStrictIn = $('rhoStrictIn'), rhoRelaxIn = $('rhoRelaxIn'), rhoObsIn = $('rhoObsIn');
   const nOut = $('nOut'), rOut = $('rOut'), cOut = $('cOut'), tOut = $('tOut');
@@ -1227,10 +1227,9 @@
     fracOut.textContent = ((M/total)*100).toFixed(1) + '%';
     const sessions = M * 2;
     ratingsOut.textContent = sessions.toLocaleString() + ' sessions';
-    const minPerOutput = Math.max(1, parseFloat(minPerOutIn.value) || 12);
-    const totalHours = (sessions * minPerOutput) / 60;
-    const perRater = totalHours / 2;
-    hoursEst.textContent = Math.round(totalHours).toLocaleString() + ' hours total (' + Math.round(perRater).toLocaleString() + ' per rater)';
+    const costPerOutput = Math.max(0, parseFloat(costPerOutIn.value) || 12);
+    const totalCost = M * costPerOutput;
+    hoursEst.textContent = '$' + Math.round(totalCost).toLocaleString() + ' total';
 
     // Calibration outcomes at current k
     const cp = calibProbs(kCal, rho, rhoStrict, rhoRelax, total);
@@ -1518,7 +1517,7 @@
 
   let timer = null;
   function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
-  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn, minPerOutIn, rhoObsIn].forEach(el => {
+  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn, costPerOutIn, rhoObsIn].forEach(el => {
     el.addEventListener('input', debounced);
     el.addEventListener('change', debounced);
   });
