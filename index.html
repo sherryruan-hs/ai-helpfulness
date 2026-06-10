@@ -760,7 +760,7 @@
 
       <section>
         <h2>Main-grading results</h2>
-        <p class="section-note">Across simulated samples drawn under the prior ρ, with integer ratings.</p>
+        <p class="section-note">Across simulated samples drawn under the current basis ρ — the prior, or the posterior once you've entered data and selected it — with integer ratings.</p>
 
         <div class="metrics">
           <div class="metric">
@@ -768,7 +768,7 @@
               <span class="label-block">Mean ICC estimate
                 <span class="info-tip" tabindex="0" role="button" aria-label="About mean ICC estimate">i<span class="info-content" role="tooltip">
                   <strong>Mean ICC estimate</strong>
-                  <p>The average ICC across all Monte-Carlo samples drawn at the current M under the prior ρ.</p>
+                  <p>The average ICC across all Monte-Carlo samples drawn at the current M under the current basis ρ (the prior, or the posterior when that's selected).</p>
                   <p>The sub-line is the <em>empirical 95% interval</em> — the 2.5th–97.5th percentiles of those simulated estimates, showing how far a single study's ICC could land from the truth by chance alone.</p>
                   <p style="color: var(--ink-3); font-size: 12px;">Usually a touch below ρ: rounding continuous scores to integers slightly attenuates ICC.</p>
                 </span></span>
@@ -823,7 +823,7 @@
       <section>
         <div class="chart-card">
           <h3 class="chart-title">Sampling distribution of ICC (at M)</h3>
-          <p class="chart-sub">Simulated samples · vertical line marks the true ρ</p>
+          <p class="chart-sub">Simulated samples · vertical line marks the basis ρ (prior or posterior)</p>
           <div class="chart-wrap">
             <canvas id="histChart" role="img" aria-label="Histogram of simulated ICC estimates clustered around the true value.">Histogram of simulated ICC estimates.</canvas>
           </div>
@@ -1327,7 +1327,7 @@
     } else if (mPower !== null) {
       recMNote.innerHTML = `${basis}Reaches <em>±0.10 CI half-width</em>. 80% power vs ρ₀ already met at M = ${mPower.toLocaleString()}.`;
     } else {
-      recMNote.innerHTML = `${basis}<span class="warn">Power target unreachable</span> — assumed ρ (${rhoForM.toFixed(2)}) is at or below ρ₀ (${thr.toFixed(2)}), so no M can lift the CI lower bound above ρ₀. The figure above reaches the <em>precision target (±0.10) only</em>; raise ρ or lower ρ₀ to fix this.`;
+      recMNote.innerHTML = `${basis}<span class="warn">Power target unreachable</span> — the basis ρ (${rhoForM.toFixed(2)}) is at or below ρ₀ (${thr.toFixed(2)}), so no M can lift the CI lower bound above ρ₀. The figure above reaches the <em>precision target (±0.10) only</em>; raise ρ or lower ρ₀ to fix this.`;
     }
     applyM.classList.remove('disabled');
     applyM.dataset.value = mRec;
@@ -1335,8 +1335,11 @@
     // --- Monte Carlo for the main panel ---
     const N_SIMS = Math.max(300, Math.min(1500, Math.floor(2_000_000 / Math.max(50, M))));
 
-    const sigmaA = Math.sqrt(rho);
-    const sigmaE = Math.sqrt(1 - rho);
+    // Charts + metrics describe the same basis the M recommendation uses
+    // (prior ρ by default, posterior once data is entered and selected).
+    const rhoChart = rhoForM;
+    const sigmaA = Math.sqrt(rhoChart);
+    const sigmaE = Math.sqrt(1 - rhoChart);
     const estimates = new Float64Array(N_SIMS);
     let widthSum = 0, powerCount = 0;
 
@@ -1381,8 +1384,8 @@
     $('mNeed').textContent = needM.toLocaleString();
     $('mNeedSub').textContent = usePosterior ? 'outputs · basis: posterior ρ' : 'outputs, FPC-adjusted';
 
-    const lo = Math.max(-0.2, Math.min(p025, rho - 0.4) - 0.05);
-    const hi = Math.min(1.05, Math.max(p975, rho + 0.4) + 0.05);
+    const lo = Math.max(-0.2, Math.min(p025, rhoChart - 0.4) - 0.05);
+    const hi = Math.min(1.05, Math.max(p975, rhoChart + 0.4) + 0.05);
     const bins = 36;
     const w = (hi - lo) / bins;
     const counts = new Array(bins).fill(0);
@@ -1419,9 +1422,9 @@
           annotation: undefined,
           xrefAnnotation: {
             lines: [{
-              x: ((rho - lo) / w) - 0.5,
+              x: ((rhoChart - lo) / w) - 0.5,
               color: COL.warn,
-              label: 'true ρ = ' + rho.toFixed(2),
+              label: (usePosterior ? 'posterior ρ = ' : 'prior ρ = ') + rhoChart.toFixed(2),
               width: 1.5,
               dash: [4, 3]
             }]
@@ -1448,9 +1451,9 @@
     const step = Math.max(1, Math.round(nMaxCurve / 80));
     for (let nn=Math.max(5, step); nn<=nMaxCurve; nn+=step){
       ns.push(nn);
-      hws.push(ciHalfWidthFromRho(rho, nn, z, total));
+      hws.push(ciHalfWidthFromRho(rhoChart, nn, z, total));
     }
-    const currentHW = ciHalfWidthFromRho(rho, M, z, total);
+    const currentHW = ciHalfWidthFromRho(rhoChart, M, z, total);
     const nIdx = ns.findIndex(v => v >= M);
 
     if (curveChart) curveChart.destroy();
