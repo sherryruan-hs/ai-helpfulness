@@ -521,8 +521,8 @@
     <div class="main-col">
 
       <section>
-        <h2>Study setup &amp; assumption</h2>
-        <p class="section-note">The pool you're sampling from, plus your expectation of inter-rater agreement (used by both calibration and main-grading calculations below).</p>
+        <h2>Study setup &amp; prior</h2>
+        <p class="section-note">The pool you're sampling from, plus your prior belief about inter-rater agreement (used to plan calibration and, after data, as the prior in the Bayesian update).</p>
 
         <div class="setup">
           <div class="setup-grid">
@@ -571,10 +571,10 @@
             <div class="ctrl-row rho-inline">
               <div class="ctrl-head">
                 <span class="label-block">
-                  <label class="ctrl-label" for="rIn">Assumed <span class="sym">ρ</span></label>
-                  <span class="info-tip" tabindex="0" role="button" aria-label="About true ICC">i<span class="info-content" role="tooltip">
-                    <strong>True ICC (ρ)</strong>
-                    <p>ICC measures agreement between raters scoring the same items. ρ is your best guess of what you'll observe — used for planning both calibration and main grading.</p>
+                  <label class="ctrl-label" for="rIn">Prior ICC <span class="sym">ρ</span></label>
+                  <span class="info-tip" tabindex="0" role="button" aria-label="About prior ICC">i<span class="info-content" role="tooltip">
+                    <strong>Prior ICC (ρ)</strong>
+                    <p>Your best guess of the true inter-rater ICC <em>before</em> calibration. It plans the calibration size k and the main study, and acts as the prior in the Bayesian update once you enter an observed ICC.</p>
                     <span class="bands">
                       <span>&lt; 0.50</span><span>poor agreement</span>
                       <span>0.50–0.75</span><span>moderate</span>
@@ -598,7 +598,7 @@
 
       <section>
         <h2>Calibration check (at <em>k</em>)</h2>
-        <p class="section-note">Before main grading, k outputs are double-rated to verify the rubric meets a pre-registered ICC threshold. Probabilities below assume true ICC = ρ.</p>
+        <p class="section-note">Before main grading, k outputs are double-rated to verify the rubric meets a pre-registered ICC threshold. Probabilities below assume true ICC = the prior ρ.</p>
 
         <div class="setup">
           <div class="calib-grid">
@@ -659,14 +659,23 @@
 
           <div class="observed-row">
             <span class="label-block">
-              <label class="ctrl-label" for="rhoObsIn">Observed calibration ICC (instead of ρ)</label>
+              <label class="ctrl-label" for="rhoObsIn">Observed calibration ICC (data)</label>
               <span class="info-tip" tabindex="0" role="button" aria-label="About observed ICC">i<span class="info-content" role="tooltip">
-                <strong>Observed calibration ICC</strong>
-                <p>After you've run calibration on k outputs, plug in the actual ICC you measured. The <strong style="display:inline; margin:0; font-size:inherit; font-family:inherit;">M recommendation</strong> in the right panel will switch to using this value as the basis for sample-size calculation, with the 95% CI of your observation shown as context.</p>
-                <p>Leave blank to plan M using the assumed ρ above.</p>
+                <strong>Observed calibration ICC (data)</strong>
+                <p>The ICC you actually measured on the k calibration outputs. It's combined with the prior ρ via a Bayesian update to give the <strong style="display:inline; margin:0; font-size:inherit; font-family:inherit;">posterior ρ</strong> shown beside it.</p>
+                <p>Switch the M recommendation to the <em>posterior</em> basis to plan the main sample from that blend. Leave blank to plan from the prior alone.</p>
               </span></span>
             </span>
             <input type="number" id="rhoObsIn" min="0" max="1" step="0.01" placeholder="—" />
+            <span class="label-block">
+              <label class="ctrl-label" for="priorStrengthIn">Prior strength</label>
+              <span class="info-tip" tabindex="0" role="button" aria-label="About prior strength">i<span class="info-content" role="tooltip">
+                <strong>Prior strength (n₀)</strong>
+                <p>How much weight your prior ρ carries, expressed as an equivalent number of calibration outputs. A prior strength of 20 means your prior counts for as much as having already graded 20 outputs.</p>
+                <p>The posterior is a precision-weighted blend: a larger prior strength pulls it toward the prior ρ; a larger calibration k pulls it toward the observed data.</p>
+              </span></span>
+            </span>
+            <input type="number" id="priorStrengthIn" min="0" max="500" step="1" value="20" />
             <span class="observed-ci" id="rhoObsCIOut"></span>
           </div>
         </div>
@@ -751,7 +760,7 @@
 
       <section>
         <h2>Main-grading results</h2>
-        <p class="section-note">Across simulated samples drawn under the assumed ρ, with integer ratings.</p>
+        <p class="section-note">Across simulated samples drawn under the prior ρ, with integer ratings.</p>
 
         <div class="metrics">
           <div class="metric">
@@ -759,7 +768,7 @@
               <span class="label-block">Mean ICC estimate
                 <span class="info-tip" tabindex="0" role="button" aria-label="About mean ICC estimate">i<span class="info-content" role="tooltip">
                   <strong>Mean ICC estimate</strong>
-                  <p>The average ICC across all Monte-Carlo samples drawn at the current M under the assumed ρ.</p>
+                  <p>The average ICC across all Monte-Carlo samples drawn at the current M under the prior ρ.</p>
                   <p>The sub-line is the <em>empirical 95% interval</em> — the 2.5th–97.5th percentiles of those simulated estimates, showing how far a single study's ICC could land from the truth by chance alone.</p>
                   <p style="color: var(--ink-3); font-size: 12px;">Usually a touch below ρ: rounding continuous scores to integers slightly attenuates ICC.</p>
                 </span></span>
@@ -801,7 +810,7 @@
                 <span class="info-tip" tabindex="0" role="button" aria-label="About M for ±0.10 precision">i<span class="info-content" role="tooltip">
                   <strong>M for ± 0.10 precision</strong>
                   <p>The smallest main-sample M whose 95% CI half-width is ≤ 0.10 — from Bonett (2002), with the finite-population correction.</p>
-                  <p>Uses the same ρ basis as the M recommendation: assumed ρ by default, or your observed calibration ICC when that toggle is on (the sub-line notes which).</p>
+                  <p>Uses the same ρ basis as the M recommendation: the prior ρ by default, or the Bayesian posterior when that toggle is on (the sub-line notes which).</p>
                 </span></span>
               </span>
             </div>
@@ -854,8 +863,8 @@
               <button class="rec-apply" id="applyM" data-target="nIn">apply →</button>
             </div>
             <div class="rec-basis-toggle" id="basisToggle">
-              <button class="basis-btn active" data-basis="assumed">assumed ρ</button>
-              <button class="basis-btn" data-basis="observed">observed ICC</button>
+              <button class="basis-btn active" data-basis="prior">prior ρ</button>
+              <button class="basis-btn" data-basis="posterior">posterior</button>
             </div>
             <div class="rec-value">
               <strong id="recM">—</strong><span class="rec-value-suffix">outputs</span>
@@ -876,6 +885,9 @@
           <h3>How the recommendations are derived</h3>
           <p><strong style="color: var(--ink); font-style: normal;">k</strong> is the smallest size giving ≥ 80% probability of strict pass at the assumed ρ. If ρ ≤ strict threshold, calibration cannot reliably pass and the recommendation flags the underlying issue.</p>
           <p><strong style="color: var(--ink); font-style: normal;">M</strong> is the larger of (a) Bonett's N for ±0.10 CI half-width and (b) the N for ≥ 80% power that the CI lower bound exceeds ρ₀. The binding criterion is noted.</p>
+
+          <h3>Bayesian update</h3>
+          <p>The <em>prior</em> is your assumed ρ, weighted as a "prior strength" of n₀ equivalent outputs; the <em>data</em> is the observed calibration ICC at k. In Fisher-z space the <em>posterior</em> is the precision-weighted blend <code>W_post = (n₀·W_prior + k·W_data) / (n₀ + k)</code>, with posterior SD ≈ <code>1/√(n₀ + k)</code>. It sits between prior and data — not at the observed value. Choosing the posterior basis plans M from this blend.</p>
 
           <h3>Data-generating model</h3>
           <p>Each output is drawn as <code>y_ij = μ + s·(α_i + e_ij)</code> with <code>Var(α) = ρ</code>, <code>Var(e) = 1 − ρ</code>. The latent score is shifted to the centre of the rating scale, scaled so ±2 SD covers the range, then rounded and clipped to the scale bounds.</p>
@@ -1053,7 +1065,7 @@
   const nIn = $('nIn'), rIn = $('rIn'), cIn = $('cIn'), tIn = $('tIn');
   const pIn = $('pIn'), qIn = $('qIn'), kIn = $('kIn'), sMinIn = $('sMinIn'), sMaxIn = $('sMaxIn'), costPerOutIn = $('costPerOutIn');
   const jointIn = $('jointIn');
-  const kCalIn = $('kCalIn'), rhoStrictIn = $('rhoStrictIn'), rhoRelaxIn = $('rhoRelaxIn'), rhoObsIn = $('rhoObsIn');
+  const kCalIn = $('kCalIn'), rhoStrictIn = $('rhoStrictIn'), rhoRelaxIn = $('rhoRelaxIn'), rhoObsIn = $('rhoObsIn'), priorStrengthIn = $('priorStrengthIn');
   const nOut = $('nOut'), rOut = $('rOut'), cOut = $('cOut'), tOut = $('tOut');
   const cLabel = $('cLabel'), jointDetail = $('jointDetail');
   const totalOut = $('totalOut'), fracOut = $('fracOut'), ratingsOut = $('ratingsOut'), hoursEst = $('hoursEst');
@@ -1263,29 +1275,37 @@
       delete applyK.dataset.value;
     }
 
-    // Observed ICC at k (optional, post-calibration)
+    // Observed calibration ICC (data) — optional, post-calibration
     const rhoObsRaw = (rhoObsIn.value || '').trim();
     const rhoObsValid = rhoObsRaw !== '' && !isNaN(parseFloat(rhoObsRaw));
     const rhoObs = rhoObsValid ? Math.max(0, Math.min(0.999, parseFloat(rhoObsRaw))) : null;
-
-    // Basis toggle: which ρ value drives M recommendation
-    const observedBtn = document.querySelector('.basis-btn[data-basis="observed"]');
-    const assumedBtn = document.querySelector('.basis-btn[data-basis="assumed"]');
     const hasObserved = rhoObs !== null;
-    observedBtn.disabled = !hasObserved;
-    if (!hasObserved && rhoBasis === 'observed') rhoBasis = 'assumed';
-    assumedBtn.classList.toggle('active', rhoBasis === 'assumed');
-    observedBtn.classList.toggle('active', rhoBasis === 'observed' && hasObserved);
 
-    const useObserved = rhoBasis === 'observed' && hasObserved;
-    const rhoForM = useObserved ? rhoObs : rho;
-
+    // Bayesian update in Fisher-z space: posterior = precision-weighted blend of
+    // the prior (assumed ρ, strength n₀ outputs) and the data (observed ICC at k).
+    const zToR = (W) => (Math.exp(2*W) - 1) / (Math.exp(2*W) + 1);
+    const priorStrength = Math.max(0.5, parseFloat(priorStrengthIn.value) || 20);
+    let rhoPost = rho;
     if (hasObserved){
-      const [obsL, obsU] = fisherCI(rhoObs, kCal, 1.96, total);
-      rhoObsCIOut.textContent = `→ 95% CI [${obsL.toFixed(2)}, ${obsU.toFixed(2)}]`;
+      const Wprior = fisherW(rho), Wdata = fisherW(rhoObs);
+      const Wpost = (priorStrength * Wprior + kCal * Wdata) / (priorStrength + kCal);
+      const sdPost = 1 / Math.sqrt(priorStrength + kCal);
+      rhoPost = zToR(Wpost);
+      rhoObsCIOut.textContent = `→ posterior ρ = ${rhoPost.toFixed(2)} · 95% CI [${zToR(Wpost - 1.96*sdPost).toFixed(2)}, ${zToR(Wpost + 1.96*sdPost).toFixed(2)}]`;
     } else {
       rhoObsCIOut.textContent = '';
     }
+
+    // Basis toggle: prior ρ vs posterior drives the M recommendation
+    const posteriorBtn = document.querySelector('.basis-btn[data-basis="posterior"]');
+    const priorBtn = document.querySelector('.basis-btn[data-basis="prior"]');
+    posteriorBtn.disabled = !hasObserved;
+    if (!hasObserved && rhoBasis === 'posterior') rhoBasis = 'prior';
+    priorBtn.classList.toggle('active', rhoBasis === 'prior');
+    posteriorBtn.classList.toggle('active', rhoBasis === 'posterior' && hasObserved);
+
+    const usePosterior = rhoBasis === 'posterior' && hasObserved;
+    const rhoForM = usePosterior ? rhoPost : rho;
 
     // M recommendation
     const mPrecision = bonettN(rhoForM, z, 0.10, total);
@@ -1299,8 +1319,8 @@
       binding = 'precision';
     }
     recM.textContent = mRec.toLocaleString();
-    const basis = useObserved
-      ? `Based on <em>observed ICC = ${rhoObs.toFixed(2)}</em> at k = ${kCal.toLocaleString()}. `
+    const basis = usePosterior
+      ? `Based on the <em>posterior ρ = ${rhoPost.toFixed(2)}</em> (prior ${rho.toFixed(2)} updated with k = ${kCal.toLocaleString()} outputs at observed ${rhoObs.toFixed(2)}). `
       : '';
     if (binding === 'power') {
       recMNote.innerHTML = `${basis}Reaches <em>80% power vs ρ₀ = ${thr.toFixed(2)}</em>. Precision target (±0.10) already met at M = ${mPrecision.toLocaleString()}.`;
@@ -1359,7 +1379,7 @@
     $('mPow').textContent = (power*100).toFixed(0) + '%';
     $('mPowSub').textContent = `at ρ₀ = ${thr.toFixed(2)}`;
     $('mNeed').textContent = needM.toLocaleString();
-    $('mNeedSub').textContent = useObserved ? 'outputs · basis: observed ICC' : 'outputs, FPC-adjusted';
+    $('mNeedSub').textContent = usePosterior ? 'outputs · basis: posterior ρ' : 'outputs, FPC-adjusted';
 
     const lo = Math.max(-0.2, Math.min(p025, rho - 0.4) - 0.05);
     const hi = Math.min(1.05, Math.max(p975, rho + 0.4) + 0.05);
@@ -1506,7 +1526,7 @@
   setupApply(applyM);
 
   // Basis toggle state (which ρ value drives M recommendation)
-  let rhoBasis = 'assumed';
+  let rhoBasis = 'prior';
   document.querySelectorAll('.basis-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.disabled) return;
@@ -1517,7 +1537,7 @@
 
   let timer = null;
   function debounced(){ clearTimeout(timer); timer = setTimeout(run, 80); }
-  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn, costPerOutIn, rhoObsIn].forEach(el => {
+  [nIn, rIn, cIn, tIn, pIn, qIn, kIn, sMinIn, sMaxIn, jointIn, kCalIn, rhoStrictIn, rhoRelaxIn, costPerOutIn, rhoObsIn, priorStrengthIn].forEach(el => {
     el.addEventListener('input', debounced);
     el.addEventListener('change', debounced);
   });
